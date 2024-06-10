@@ -66,7 +66,7 @@ class Main extends Application
 	{
 		if (is_ready)
 		{
-			core.update(elapsed_ms);
+			core.update(1 / elapsed_ms);
 		}
 	}
 

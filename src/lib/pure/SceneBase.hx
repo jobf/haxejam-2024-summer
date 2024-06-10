@@ -8,7 +8,7 @@ import lib.input2action.Controller;
 	{
 	public function begin() {}
 
-	public function update(elapsed_ms:Int) {}
+	public function update(elapsed_seconds:Float) {}
 
 	public function draw() {}
 
@@ -33,9 +33,9 @@ abstract class SceneBase<T>
 
 	/**
 		Handle loop logic here, e,g, calculating movement for player, change object states, etc.
-		@param elapsed_ms is the number of milliseconds passed since the last step
+		@param elapsed_seconds is the number of milliseconds passed since the last step
 	**/
-	abstract public function update(elapsed_ms:Int): Void;
+	abstract public function update(elapsed_seconds:Float): Void;
 
 	/**
 		Make draw calls here
