@@ -409,7 +409,11 @@ class Fill implements Element {
 		var element = new Fill(Std.int(x), Std.int(y), Std.int(width), Std.int(height), tile_index, tile_width, tint);
 
 		if (config != null) {
-			element.tile_height = config.tile_height ?? tile_width;
+			if (config.tile_height == null) {
+				element.tile_height = tile_width;
+			} else {
+				element.tile_height = config.tile_height;
+			}
 			element.scroll_speed_x = config.scroll_speed_x;
 			element.scroll_speed_y = config.scroll_speed_y;
 
