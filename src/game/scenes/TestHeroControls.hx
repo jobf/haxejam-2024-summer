@@ -1,8 +1,9 @@
 package game.scenes;
 
 import lib.peote.Elements;
+import lib.pure.Calculate;
 import lime.utils.Assets;
-import game.Actor.Magician;
+import game.Actor;
 import game.Core;
 
 using lib.peote.TextureTools;
@@ -92,7 +93,9 @@ class TestHeroControls extends GameScene {
 		controller.start.on_press = () -> {}
 
 		core.input.change_target(controller);
-		draw();
+		core.window.onMouseMove.add((x, y) -> {
+			hero.scroll_follow_mouse(x, y);
+		});
 	}
 
 	override function update(elapsed_seconds:Float) {

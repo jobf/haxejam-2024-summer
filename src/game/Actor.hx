@@ -1,6 +1,7 @@
 package game;
 
 import lib.peote.Elements;
+import lib.pure.Calculate;
 
 using lib.peote.TextureTools;
 using lib.pure.Cache;
@@ -135,9 +136,9 @@ class Projectile extends Actor {
 
 class Magician extends Actor {
 	var cache:Cache<Projectile>;
+	var scroll:Sprite;
 
 	public function new(x:Float, y:Float, sprites:Sprites) {
-		var tile_index = 32;
 		cache = {
 			cached_items: [],
 			create: () -> new Projectile({
@@ -148,7 +149,10 @@ class Magician extends Actor {
 			cache: projectile -> projectile.sprite.tint.a = 0,
 			item_limit: 15,
 		};
-		super(sprites.make(x, y, tile_index));
+		var hero_tile_index = 32;
+		super(sprites.make(x, y, hero_tile_index));
+		var scroll_tile_index = 34;
+		scroll = sprites.make(x, y, scroll_tile_index);
 	}
 
 	override function update(elapsed_seconds:Float) {
@@ -189,6 +193,13 @@ class Magician extends Actor {
 			}
 			trace('cast spell');
 		}
+	}
+
+	public function scroll_follow_mouse(x:Float, y:Float) {
+		var angle = -radians_between(x, y, movement.position_x, movement.position_y) - 180;
+		scroll.x = movement.position_x + Math.cos(angle) * 40;
+		scroll.y = movement.position_y + Math.sin(angle) * 40;
+		// trace(scroll.angle);
 	}
 
 	public function show_spells() {}
