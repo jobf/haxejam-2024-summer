@@ -31,7 +31,6 @@ class Core {
 		#end
 
 		scene_begin(scene_constructor);
-		trace('scene bagan');
 	}
 
 	function update(elapsed_seconds:Float) {

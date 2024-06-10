@@ -2,13 +2,14 @@ package game.scenes;
 
 import lib.peote.Elements;
 import lime.utils.Assets;
+import game.Actor.Magician;
 import game.Core;
 
 using lib.peote.TextureTools;
 
 class TestHeroControls extends GameScene {
 	var sprites:Sprites;
-	var hero:Actor;
+	var hero:Magician;
 
 	public function new(core:Core) {
 		super(core, {
@@ -39,10 +40,8 @@ class TestHeroControls extends GameScene {
 		var sprite_texture = template_asset.tilesheet_from_image(tile_size, tile_size);
 		var scale = 4;
 		var tile_size = tile_size * scale;
-		var tile_index = 32;
 		sprites = new Sprites(core.screen.display, sprite_texture, "sprites", tile_size, tile_size);
-		var sprite = sprites.make(100, 100, tile_index);
-		hero = new Actor(sprite);
+		hero = new Magician(100, 100, sprites);
 		init_controller();
 	}
 
@@ -93,6 +92,7 @@ class TestHeroControls extends GameScene {
 		controller.start.on_press = () -> {}
 
 		core.input.change_target(controller);
+		draw();
 	}
 
 	override function update(elapsed_seconds:Float) {
