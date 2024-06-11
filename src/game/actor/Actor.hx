@@ -12,7 +12,7 @@ class Actor
 	public var sprite(default, null): Sprite;
 	public var movement(default, null): MotionComponent;
 
-	var speed: Float = 500;
+	var speed: Float = 1800;
 
 	public var facing: Int = 1;
 
@@ -30,8 +30,8 @@ class Actor
 		this.sprite = sprite;
 		this.animation_tile_indexes = animation_tile_indexes;
 		movement = new MotionComponent(sprite.x, sprite.y);
-		movement.deceleration_x = 900;
-		movement.deceleration_y = 900;
+		movement.deceleration_x = 2000;
+		movement.deceleration_y = 2000;
 		movement.velocity_max_x = 300;
 		movement.velocity_max_y = 300;
 	}

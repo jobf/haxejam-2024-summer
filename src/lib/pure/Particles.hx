@@ -125,8 +125,13 @@ class Particle<T>
 		movement.acceleration_x = ((Math.random() * blueprint.velocity_x - (blueprint.velocity_x / 2)));
 		movement.acceleration_y = ((Math.random() * blueprint.velocity_y - (blueprint.velocity_y / 2)));
 		particle.lifetime = Std.int(Math.random() * blueprint.lifetime);
-		movement.velocity_max_x = blueprint.velocity_x;
-		movement.velocity_max_y = blueprint.velocity_x;
+
+		// movement.deceleration_x = 1500;
+		// movement.deceleration_y = 1500;
+		// movement.velocity_max_x = 200;
+		// movement.velocity_max_y = 200;
+		movement.velocity_max_x = 99999; // blueprint.velocity_x;
+		movement.velocity_max_y = 99999; // blueprint.velocity_x;
 		movement.teleport(x, y);
 		particle.change_alpha(graphic, 0xff);
 	}
