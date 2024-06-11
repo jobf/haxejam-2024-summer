@@ -57,8 +57,8 @@ class Main extends Application
 			res_width,
 			res_height,
 			// core -> new TestParticles(core),
-			// core -> new TestLevel(core),
-			core -> new TestCombat(core),
+			core -> new TestLevel(core),
+			// core -> new TestCombat(core),
 			// core -> new TestEnemy(core),
 			// core -> new TestHeroControls(core)
 		);

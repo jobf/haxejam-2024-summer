@@ -1,10 +1,10 @@
 package lib.peote;
 
-import lib.peote.Elements;
-import lib.pure.Calculate;
 import peote.view.Buffer;
 import peote.view.Display;
 import peote.view.Program;
+import lib.peote.Elements;
+import lib.pure.Calculate;
 
 @:structInit
 /**
@@ -182,10 +182,10 @@ class Camera
 	var x_offset: Float = 0;
 	var y_offset: Float = 0;
 
-	public function draw(step_ratio: Float)
+	public function draw()
 	{
-		x_offset = Math.floor(lerp(previous_offset_x, offset_x, step_ratio));
-		y_offset = Math.floor(lerp(previous_offset_y, offset_y, step_ratio));
+		x_offset = offset_x; // Math.floor(lerp(previous_offset_x, offset_x, step_ratio));
+		y_offset = offset_y; // Math.floor(lerp(previous_offset_y, offset_y, step_ratio));
 
 		for (display in displays)
 		{

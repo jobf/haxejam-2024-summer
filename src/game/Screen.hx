@@ -6,18 +6,20 @@ import peote.view.Display;
 import peote.view.PeoteView;
 
 @:publicFields
-class Screen {
-	var peote_view:PeoteView;
-	var res_width:Int;
-	var res_height:Int;
-	var window_width:Int;
-	var window_height:Int;
+class Screen
+{
+	var peote_view: PeoteView;
+	var res_width: Int;
+	var res_height: Int;
+	var window_width: Int;
+	var window_height: Int;
+	var display_level_tiles: Display;
+	var display: Display;
+	var display_hud: PeoteUIDisplay;
+	var res_limits: Rectangle;
 
-	var display:Display;
-	var display_hud:PeoteUIDisplay;
-	var res_limits:Rectangle;
-
-	function new(peote_view:PeoteView, res_width:Int, res_height:Int) {
+	function new(peote_view: PeoteView, res_width: Int, res_height: Int)
+	{
 		this.peote_view = peote_view;
 		this.res_width = res_width;
 		this.res_height = res_height;
@@ -29,11 +31,14 @@ class Screen {
 		}
 		this.window_width = peote_view.window.width;
 		this.window_height = peote_view.window.height;
-		display = new Display(0, 0, res_width, res_height, Colors.GREY);
+		display_level_tiles = new Display(0, 0, res_width, res_height, Colors.TRANSPARENT);
+		display = new Display(0, 0, res_width, res_height, Colors.TRANSPARENT);
 		display_hud = new PeoteUIDisplay(0, 0, res_width, res_height, Colors.MAROON);
+		peote_view.addDisplay(display_level_tiles);
 		peote_view.addDisplay(display);
 		peote_view.addDisplay(display_hud);
-		peote_view.window.onResize.add((width, height) -> {
+		peote_view.window.onResize.add((width, height) ->
+		{
 			this.window_width = width;
 			this.window_height = height;
 			fit_to_window();
@@ -42,32 +47,40 @@ class Screen {
 		peote_view.start();
 	}
 
-	inline function display_hud_hide() {
+	inline function display_hud_hide()
+	{
 		display_hud.hide();
 	}
 
-	inline function display_hud_show() {
+	inline function display_hud_show()
+	{
 		display_hud.show();
 	}
 
-	function fit_to_window() {
+	function fit_to_window()
+	{
 		var scale = 1.0;
 
-		if (res_height < res_width) {
+		if (res_height < res_width)
+		{
 			// use height to determine scale when height is smaller edge
 			scale = window_height / res_height;
-		} else {
+		}
+		else
+		{
 			// use width to determine scale when width is smaller edge
 			scale = window_width / res_width;
 		}
 
 		// keep scale is noit less than 1
-		if (scale < 1) {
+		if (scale < 1)
+		{
 			scale = 1;
 		}
 
 		// ensure up-scaling is an even number
-		if (scale > 2 && scale % 2 != 0) {
+		if (scale > 2 && scale % 2 != 0)
+		{
 			scale -= 1;
 		}
 

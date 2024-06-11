@@ -3,14 +3,26 @@ package lib.pure;
 @:publicFields
 class MotionComponent
 {
-	function new(x: Float, y: Float)
+	function new(x: Float, y: Float, cell_size: Int)
 	{
 		position_x = x;
 		position_previous_x = x;
 
 		position_y = y;
 		position_previous_y = y;
+
+		this.cell_size = cell_size;
+		column = Std.int(x / cell_size);
+		cell_ratio_x = x - (column * cell_size);
+		row = Std.int(y / cell_size);
+		cell_ratio_y = y - (row * cell_size);
 	}
+
+	var cell_size: Int;
+	var column: Int;
+	var cell_ratio_x: Float;
+	var row: Int;
+	var cell_ratio_y: Float;
 
 	/**
 	 * Current x position in world space
@@ -108,7 +120,10 @@ class MotionComponentLogic
 		// keep record of previous position before setting new position based on the movement delta
 		motion.position_previous_x = motion.position_x;
 		motion.position_x = motion.position_x + movement_delta;
-
+		motion.column = Std.int(motion.position_x / motion.cell_size);
+		motion.cell_ratio_x = motion.position_x - (motion.column * motion.cell_size);
+		motion.row = Std.int(motion.position_y / motion.cell_size);
+		motion.cell_ratio_y = motion.position_y - (motion.row * motion.cell_size);
 		// update y axis position and speed
 		var vel_delta = 0.5 * (compute_axis(
 			motion.velocity_y,

@@ -10,11 +10,11 @@ class Magician extends Actor
 	var scroll: Sprite;
 	var mouse_angle: Float;
 
-	public function new(x: Float, y: Float, sprites: Sprites)
+	public function new(x: Float, y: Float, cell_size: Int, sprites: Sprites)
 	{
 		cache = {
 			cached_items: [],
-			create: () -> new Projectile({
+			create: () -> new Projectile(cell_size, {
 				sprite: sprites.make(0, 0, 512),
 			}),
 			cache: projectile -> projectile.sprite.tint.a = 0,
@@ -22,24 +22,29 @@ class Magician extends Actor
 		};
 
 		var animation_tile_indexes = [32, 33];
-		super(sprites.make(
-			x,
-			y,
-			animation_tile_indexes[0]
-		), animation_tile_indexes);
+		super(
+			cell_size,
+			sprites.make(
+				x,
+				y,
+
+				animation_tile_indexes[0]
+			),
+			animation_tile_indexes
+		);
 
 		var scroll_tile_index = 34;
 		scroll = sprites.make(x, y, scroll_tile_index);
 	}
 
-	function update_(elapsed_seconds: Float, targets: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void)
+	function update_(elapsed_seconds: Float, targets: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
 	{
-		super.update(elapsed_seconds);
+		super.update(elapsed_seconds, has_wall_tile_at);
 		for (cached in cache.cached_items)
 		{
 			if (!cached.is_waiting)
 			{
-				cached.item.update(elapsed_seconds);
+				cached.item.update(elapsed_seconds, has_wall_tile_at);
 				for (target in targets)
 				{
 					if (target.is_expired)

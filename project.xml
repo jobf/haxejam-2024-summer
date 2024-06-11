@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-	
+
 	<meta title="haxejam-summer-2024" package="peote.view" version="0.1.0" company="Loturzeltumpel" />
-	
+
 	<android target-sdk-version="28" />
-	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
-	
+	<!-- <meta build-number="714" /> -->
+	<!-- let set the buildnumber manual (android) -->
+
 	<!-- <window fps="60" width="800" height="600" vsync="true" antialiasing="4" resizable="true" depth-buffer="true" stencil-buffer="false" /> -->
-	<window width="960" height="540" fps="61" allowHighDPI="false" vsync="true"  />
+	<window width="960" height="540" fps="61" allowHighDPI="false" vsync="true" />
 	<!-- <window if="html5||android" width="0" height="0" /> -->
-	
+
 	<app main="Main" path="dist" file="Main" />
 	<!-- <define name="stats" if="html5" /> -->
-	
+
 	<source path="src" />
-	
-	<haxelib name="lime" />	
+
+	<haxelib name="lime" />
 	<haxelib name="peote-view" />
 	<haxelib name="peote-ui" />
 	<haxelib name="input2action" />
-	<haxelib name="thx.core" /> 
-	
+	<haxelib name="thx.core" />
+	<haxelib name="deepnightLibs" />
+	<haxelib name="ldtk-haxe-api" />
+
 	<!-- force compiling for a special opengl-es version (only set one of them) -->
 	<!-- this optimizes the build and forces no-runtimecheck for the gl-features -->
 	<!-- <haxedef name="peoteview_es3" if="html5" /> -->
 	<haxedef name="peoteview_es2" if="android" /> <!-- android autodetect es3 but did not work, so force to es2 -->
-	
+
 	<!-- use special gl-features for optimization (if supported by opengl-es version) -->
 	<haxedef name="peoteview_uniformbuffers" />
 	<haxedef name="peoteview_instancedrawing" />
@@ -41,13 +44,15 @@
 
 	<haxedef name="no_deprecation_warnings" />
 	<haxeflag name="-dce" value="full" />
-	<!-- <haxedef name="webgl-debug" /> --> <!-- try with chrome and look here: https://www.khronos.org/webgl/wiki/Debugging -->
-	<!-- <haxedef name="source-map-content" /> --> <!-- to debug with chrome id needs also "-debug" -->
+	<!-- <haxedef name="webgl-debug" /> -->
+	<!-- try with chrome and look here: https://www.khronos.org/webgl/wiki/Debugging -->
+	<!-- <haxedef name="source-map-content" /> -->
+	<!-- to debug with chrome id needs also "-debug" -->
 	<!-- <haxedef name="dump=pretty output" /> -->
-	
-	<!-- for html5 and loading inside onPreloadComplete-event the assets need to be embed=true --> 
+
+	<!-- for html5 and loading inside onPreloadComplete-event the assets need to be embed=true -->
 	<assets path="assets" exclude="lime.svg" embed="true" />
-	
+
 	<icon path="assets/lime.svg" />
-	
+
 </project>

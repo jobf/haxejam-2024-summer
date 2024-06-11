@@ -9,6 +9,8 @@ Install the libs
     haxelib git peote-ui https://github.com/maitag/peote-ui.git
     haxelib install input2action
     haxelib install thx.core
+    haxelib install deepnightLibs
+	haxelib install ldtk-haxe-api
 
 # run
 

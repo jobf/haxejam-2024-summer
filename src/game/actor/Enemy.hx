@@ -7,14 +7,18 @@ class Enemy extends Actor
 {
 	var config: EnemyConfig;
 
-	function new(x: Float, y: Float, sprites: Sprites, config: EnemyConfig)
+	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig)
 	{
 		this.config = config;
-		super(sprites.make(
-			x,
-			y,
-			config.animation_tile_indexes[0]
-		), config.animation_tile_indexes);
+		super(
+			cell_size,
+			sprites.make(
+				x,
+				y,
+				config.animation_tile_indexes[0]
+			),
+			config.animation_tile_indexes
+		);
 	}
 }
 

@@ -19,4 +19,5 @@ class Colors
 	static var BLACK = 0x000000ff;
 	static var WHITE = 0xffffffff;
 	static var GREY = 0x7d7da3ff;
+	static var TRANSPARENT = 0x00000000;
 }

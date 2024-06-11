@@ -9,15 +9,19 @@ class Projectile extends Actor
 	var life_time: Float = 0;
 	var alpha: Float = 1;
 
-	function new(config: ProjectileConfig)
+	function new(cell_size: Int, config: ProjectileConfig)
 	{
-		super(config.sprite, config.animation_tile_indexes);
+		super(
+			cell_size,
+			config.sprite,
+			config.animation_tile_indexes
+		);
 		this.config = config;
 	}
 
-	override function update(elapsed_seconds: Float)
+	override function update(elapsed_seconds: Float, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
 	{
-		super.update(elapsed_seconds);
+		super.update(elapsed_seconds, has_wall_tile_at);
 		if (life_time > 0)
 		{
 			life_time -= elapsed_seconds;
