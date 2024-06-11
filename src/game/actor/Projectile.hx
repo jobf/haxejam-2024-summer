@@ -5,8 +5,6 @@ import lib.pure.Calculate;
 
 class Projectile extends Actor
 {
-	var is_expired: Bool = false;
-	var is_updating: Bool = false;
 	var config: ProjectileConfig;
 	var life_time: Float = 0;
 	var alpha: Float = 1;
@@ -28,18 +26,14 @@ class Projectile extends Actor
 		else
 		{
 			is_expired = true;
-			trace('expire projectil');
-			// if (!is_expired) {
-			// }
+			// trace('expire projectil');
 		}
-		// trace(life_time);
 	}
 
 	public function reset(x: Float, y: Float, facing_x: Int)
 	{
 		life_time = config.life_time;
 		is_expired = false;
-		is_updating = true;
 		movement.velocity_x = 0;
 		movement.velocity_y = 0;
 		movement.acceleration_x = 0;
@@ -53,13 +47,13 @@ class Projectile extends Actor
 		sprite.tint.a = 0xff;
 		sprite.x = x;
 		sprite.y = y;
-		trace('reset projectil $life_time');
+		// trace('reset projectil $life_time');
 	}
 
 	public function move_towards_angle(angle: Float)
 	{
 		sprite.angle = angle;
-		trace(sprite.angle);
+		// trace(sprite.angle);
 		movement.acceleration_x = Math.sin(angle) * config.speed;
 		movement.acceleration_y = Math.cos(angle) * config.speed;
 	}

@@ -5,14 +5,16 @@ import lib.peote.Elements;
 @:publicFields
 class Enemy extends Actor
 {
-	function new(x: Float, y: Float, sprites: Sprites)
+	var config: EnemyConfig;
+
+	function new(x: Float, y: Float, sprites: Sprites, config: EnemyConfig)
 	{
-		var animation_tile_indexes = [67, 68];
+		this.config = config;
 		super(sprites.make(
 			x,
 			y,
-			animation_tile_indexes[0]
-		), animation_tile_indexes);
+			config.animation_tile_indexes[0]
+		), config.animation_tile_indexes);
 	}
 }
 

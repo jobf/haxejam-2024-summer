@@ -52,7 +52,10 @@ class TestEnemy extends GameScene
 			sprite_size,
 			sprite_size
 		);
-		enemy = new Enemy(100, 100, sprites);
+		enemy = new Enemy(100, 100, sprites {
+			collision_radius: 5,
+			animation_tile_indexes: [67, 68]
+		});
 	}
 
 	override function update(elapsed_seconds: Float)

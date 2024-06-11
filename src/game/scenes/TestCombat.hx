@@ -13,7 +13,7 @@ class TestCombat extends GameScene
 {
 	var sprites: Sprites;
 	var hero: Magician;
-	var enemy: Enemy;
+	var enemies: Array<Enemy>;
 
 	public function new(core: Core)
 	{
@@ -54,7 +54,16 @@ class TestCombat extends GameScene
 			sprite_size
 		);
 		hero = new Magician(100, 100, sprites);
-		enemy = new Enemy(300, 300, sprites);
+
+		var positions: Array<Array<Float>> = [[300, 300], [240, 30], [40, 400]];
+		enemies = [
+			for (pos in positions)
+				new Enemy(pos[0], pos[1], sprites, {
+					collision_radius: 16,
+					animation_tile_indexes: [67, 68]
+				})
+		];
+
 		init_controller();
 	}
 
@@ -86,12 +95,20 @@ class TestCombat extends GameScene
 
 	override function update(elapsed_seconds: Float)
 	{
-		hero.update(elapsed_seconds);
+		hero.update_(elapsed_seconds, enemies);
+		for (enemy in enemies)
+		{
+			enemy.update(elapsed_seconds);
+		}
 	}
 
 	override function draw()
 	{
 		hero.draw();
+		for (enemy in enemies)
+		{
+			enemy.draw();
+		}
 		sprites.update_all();
 	}
 }
