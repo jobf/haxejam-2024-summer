@@ -17,15 +17,16 @@ class Actor {
 
 	var is_jumping:Bool = false;
 	var jump_velocity:Float = -0.85;
-	var tile_index:Int;
+	var animation_tile_indexes:Array<Int>;
+	var animation_frame_index:Int;
 	var animation_duration:Float = 0.45;
 	var animation_timer:Float = 0.45;
 	var direction_x:Int = 0;
 	var direction_y:Int = 0;
 
-	public function new(sprite:Sprite) {
+	public function new(sprite:Sprite, animation_tile_indexes:Array<Int>) {
 		this.sprite = sprite;
-		tile_index = sprite.tile_index;
+		this.animation_tile_indexes = animation_tile_indexes;
 		movement = new MotionComponent(sprite.x, sprite.y);
 		movement.deceleration_x = 900;
 		movement.deceleration_y = 900;
@@ -38,7 +39,8 @@ class Actor {
 		if (movement.acceleration_x != 0 || movement.acceleration_y != 0) {
 			animation_timer -= elapsed_seconds;
 			if (animation_timer <= 0) {
-				sprite.tile_index = sprite.tile_index == tile_index ? tile_index + 1 : tile_index;
+				animation_frame_index = wrapped_increment(animation_frame_index, 1, animation_tile_indexes.length);
+				sprite.tile_index = animation_tile_indexes[animation_frame_index];
 				animation_timer = animation_duration;
 			}
 		}

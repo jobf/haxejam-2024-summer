@@ -11,8 +11,7 @@ class Projectile extends Actor {
 	var alpha:Float = 1;
 
 	function new(config:ProjectileConfig) {
-		super(config.sprite);
-		sprite.tint.a = 0;
+		super(config.sprite, config.animation_tile_indexes);
 		this.config = config;
 	}
 
@@ -20,22 +19,20 @@ class Projectile extends Actor {
 		super.update(elapsed_seconds);
 		if (life_time > 0) {
 			life_time -= elapsed_seconds;
-			alpha -= 0.01;
+			// alpha -= 0.01;
 		} else {
 			is_expired = true;
 			trace('expire projectil');
 			// if (!is_expired) {
 			// }
 		}
-		trace(life_time);
+		// trace(life_time);
 	}
 
 	public function reset(x:Float, y:Float, facing_x:Int) {
 		life_time = config.life_time;
-		trace('reset projectil $life_time');
 		is_expired = false;
 		is_updating = true;
-
 		movement.velocity_x = 0;
 		movement.velocity_y = 0;
 		movement.acceleration_x = 0;
@@ -49,11 +46,12 @@ class Projectile extends Actor {
 		sprite.tint.a = 0xff;
 		sprite.x = x;
 		sprite.y = y;
+		trace('reset projectil $life_time');
 	}
 
 	public function move_towards_angle(angle:Float) {
 		var angle_offset = -angle - 180;
-		sprite.angle = angle * to_degrees();
+		sprite.angle = angle; // * to_degrees();
 		trace(sprite.angle);
 		movement.acceleration_x = Math.cos(angle_offset) * config.speed;
 		movement.acceleration_y = Math.sin(angle_offset) * config.speed;
@@ -64,6 +62,7 @@ class Projectile extends Actor {
 @:structInit
 class ProjectileConfig {
 	var sprite:Sprite;
-	var life_time:Float = 0.8;
+	var life_time:Float = 2.8;
 	var speed:Float = 1000;
+	var animation_tile_indexes:Array<Int> = [0];
 }

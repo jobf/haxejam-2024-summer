@@ -18,8 +18,9 @@ class Magician extends Actor {
 			cache: projectile -> projectile.sprite.tint.a = 0,
 			item_limit: 15,
 		};
+		var animation_tile_indexes = [32, 33];
 		var hero_tile_index = 32;
-		super(sprites.make(x, y, hero_tile_index));
+		super(sprites.make(x, y, hero_tile_index), animation_tile_indexes);
 		var scroll_tile_index = 34;
 		scroll = sprites.make(x, y, scroll_tile_index);
 	}
@@ -50,7 +51,7 @@ class Magician extends Actor {
 	public function cast_spell(facing_x:Int) {
 		var projectile = cache.get();
 		if (projectile != null) {
-			projectile.reset(movement.position_x, movement.position_y, facing_x);
+			projectile.reset(scroll.x, scroll.y, facing_x);
 			projectile.sprite.tile_index = 0;
 			projectile.move_towards_angle(mouse_angle);
 		}
@@ -59,8 +60,8 @@ class Magician extends Actor {
 	public function scroll_follow_mouse(x:Float, y:Float) {
 		mouse_angle = radians_between(x, y, movement.position_x, movement.position_y);
 		var angle_offset = -mouse_angle - 180;
-		scroll.x = movement.position_x + Math.cos(angle_offset) * 40;
-		scroll.y = movement.position_y + Math.sin(angle_offset) * 40;
+		scroll.x = movement.position_x + Math.cos(angle_offset) * 60;
+		scroll.y = movement.position_y + Math.sin(angle_offset) * 60;
 		// trace('scroll_follow_mouse radians $mouse_angle');
 	}
 

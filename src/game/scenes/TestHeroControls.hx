@@ -64,9 +64,10 @@ class TestHeroControls extends GameScene {
 
 		core.input.change_target(controller);
 
-		core.window.onMouseDown.add((x, y, button) -> if (button == MouseButton.LEFT) hero.cast_spell(x > hero.movement.position_x ? 1 : -1));
+		core.window.onMouseDown.add((x, y,
+				button) -> if (button == MouseButton.LEFT) hero.cast_spell(x / core.screen.peote_view.zoom > hero.movement.position_x ? 1 : -1));
 		core.window.onMouseMove.add((x, y) -> {
-			hero.scroll_follow_mouse(x, y);
+			hero.scroll_follow_mouse(x / core.screen.peote_view.zoom, y / core.screen.peote_view.zoom);
 		});
 	}
 
