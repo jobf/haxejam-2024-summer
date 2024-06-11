@@ -1,0 +1,58 @@
+{
+	"lineEnds": {
+		"leftCurly": "both",
+		"emptyCurly": "noBreak",
+		"objectLiteralCurly": {
+			"leftCurly": "after"
+		}
+	},
+	"sameLine": {
+		"ifBody": "next",
+		"elseBody": "next",
+		"ifElse": "next",
+		"elseIf": "next",
+		"expressionIf": "keep",
+		"expressionIfWithBlocks": false
+	},
+	"whitespace": {
+		"parenConfig": {
+			"funcParamParens": {
+				"openingPolicy": "none",
+				"closingPolicy": "none",
+				"removeInnerWhenEmpty": true
+			},
+			"anonFuncParamParens": {
+				"openingPolicy": "none",
+				"closingPolicy": "none",
+				"removeInnerWhenEmpty": true
+			}
+		},
+		"arrowFunctionsPolicy": "around",
+		"functionTypeHaxe3Policy": "around",
+		"functionTypeHaxe4Policy": "around",
+		"typeHintColonPolicy": "after"
+	},
+	"wrapping": {
+		"callParameter": {
+			"defaultWrap": "fillLine",
+			"rules": [
+				{
+					"conditions": [
+						{
+							"cond": "anyItemLength >= n",
+							"value": 20
+						},
+						{
+							"cond": "itemCount >= n",
+							"value": 3
+						}
+					],
+					"type": "onePerLine"
+				}
+			]
+		}
+	},
+	"emptyLines": {
+		"maxAnywhereInFile": 1
+	}
+}

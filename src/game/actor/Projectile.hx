@@ -3,24 +3,30 @@ package game.actor;
 import lib.peote.Elements;
 import lib.pure.Calculate;
 
-class Projectile extends Actor {
-	var is_expired:Bool = false;
-	var is_updating:Bool = false;
-	var config:ProjectileConfig;
-	var life_time:Float = 0;
-	var alpha:Float = 1;
+class Projectile extends Actor
+{
+	var is_expired: Bool = false;
+	var is_updating: Bool = false;
+	var config: ProjectileConfig;
+	var life_time: Float = 0;
+	var alpha: Float = 1;
 
-	function new(config:ProjectileConfig) {
+	function new(config: ProjectileConfig)
+	{
 		super(config.sprite, config.animation_tile_indexes);
 		this.config = config;
 	}
 
-	override function update(elapsed_seconds:Float) {
+	override function update(elapsed_seconds: Float)
+	{
 		super.update(elapsed_seconds);
-		if (life_time > 0) {
+		if (life_time > 0)
+		{
 			life_time -= elapsed_seconds;
 			// alpha -= 0.01;
-		} else {
+		}
+		else
+		{
 			is_expired = true;
 			trace('expire projectil');
 			// if (!is_expired) {
@@ -29,7 +35,8 @@ class Projectile extends Actor {
 		// trace(life_time);
 	}
 
-	public function reset(x:Float, y:Float, facing_x:Int) {
+	public function reset(x: Float, y: Float, facing_x: Int)
+	{
 		life_time = config.life_time;
 		is_expired = false;
 		is_updating = true;
@@ -49,20 +56,21 @@ class Projectile extends Actor {
 		trace('reset projectil $life_time');
 	}
 
-	public function move_towards_angle(angle:Float) {
-		var angle_offset = -angle - 180;
-		sprite.angle = angle; // * to_degrees();
+	public function move_towards_angle(angle: Float)
+	{
+		sprite.angle = angle;
 		trace(sprite.angle);
-		movement.acceleration_x = Math.cos(angle_offset) * config.speed;
-		movement.acceleration_y = Math.sin(angle_offset) * config.speed;
+		movement.acceleration_x = Math.sin(angle) * config.speed;
+		movement.acceleration_y = Math.cos(angle) * config.speed;
 	}
 }
 
 @:publicFields
 @:structInit
-class ProjectileConfig {
-	var sprite:Sprite;
-	var life_time:Float = 2.8;
-	var speed:Float = 1000;
-	var animation_tile_indexes:Array<Int> = [0];
+class ProjectileConfig
+{
+	var sprite: Sprite;
+	var life_time: Float = 2.8;
+	var speed: Float = 1000;
+	var animation_tile_indexes: Array<Int> = [0];
 }

@@ -81,9 +81,8 @@ class Magician extends Actor
 			movement.position_x,
 			movement.position_y
 		);
-		var angle_offset = -mouse_angle - 180;
-		scroll.x = movement.position_x + Math.cos(angle_offset) * 60;
-		scroll.y = movement.position_y + Math.sin(angle_offset) * 60;
+		scroll.x = movement.position_x + Math.sin(mouse_angle) * 60;
+		scroll.y = movement.position_y + Math.cos(mouse_angle) * 60;
 		// trace('scroll_follow_mouse radians $mouse_angle');
 	}
 

@@ -56,7 +56,8 @@ class Main extends Application
 			window,
 			res_width,
 			res_height,
-			core -> new TestEnemy(core),
+			core -> new TestCombat(core),
+			// core -> new TestEnemy(core),
 			// core -> new TestHeroControls(core)
 		);
 
