@@ -9,11 +9,13 @@ import game.actor.*;
 
 using lib.peote.TextureTools;
 
-class TestHeroControls extends GameScene {
-	var sprites:Sprites;
-	var hero:Magician;
+class TestHeroControls extends GameScene
+{
+	var sprites: Sprites;
+	var hero: Magician;
 
-	public function new(core:Core) {
+	public function new(core: Core)
+	{
 		super(core, {
 			introduction: ["testing"],
 			items: [
@@ -22,7 +24,7 @@ class TestHeroControls extends GameScene {
 					label: "reset scene",
 					action: () -> core.scene_reset(),
 					is_valid: () -> true,
-					description: "WORLD",
+					description: "",
 					on_select: item -> trace("select"),
 					on_actioned: item -> trace("action"),
 					on_reset: item -> trace("reset"),
@@ -35,19 +37,27 @@ class TestHeroControls extends GameScene {
 		});
 	}
 
-	override function begin() {
+	override function begin()
+	{
 		super.begin();
 		var template_asset = Assets.getImage("assets/sprites-16.png");
 		var tile_size = 16;
 		var sprite_texture = template_asset.tilesheet_from_image(tile_size, tile_size);
 		var scale = 4;
 		var sprite_size = tile_size * scale;
-		sprites = new Sprites(core.screen.display, sprite_texture, "sprites", sprite_size, sprite_size);
+		sprites = new Sprites(
+			core.screen.display,
+			sprite_texture,
+			"sprites",
+			sprite_size,
+			sprite_size
+		);
 		hero = new Magician(100, 100, sprites);
 		init_controller();
 	}
 
-	function init_controller() {
+	function init_controller()
+	{
 		controller.left.on_press = () -> hero.move_in_direction_x(-1);
 		controller.left.on_release = () -> hero.stop_x();
 
@@ -66,16 +76,19 @@ class TestHeroControls extends GameScene {
 
 		core.window.onMouseDown.add((x, y,
 				button) -> if (button == MouseButton.LEFT) hero.cast_spell(x / core.screen.peote_view.zoom > hero.movement.position_x ? 1 : -1));
-		core.window.onMouseMove.add((x, y) -> {
+		core.window.onMouseMove.add((x, y) ->
+		{
 			hero.scroll_follow_mouse(x / core.screen.peote_view.zoom, y / core.screen.peote_view.zoom);
 		});
 	}
 
-	override function update(elapsed_seconds:Float) {
+	override function update(elapsed_seconds: Float)
+	{
 		hero.update(elapsed_seconds);
 	}
 
-	override function draw() {
+	override function draw()
+	{
 		hero.draw();
 		sprites.update_all();
 	}

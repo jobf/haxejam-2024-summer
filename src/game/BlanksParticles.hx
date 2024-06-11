@@ -14,15 +14,15 @@ class BlanksParticles extends Particles<Blank>
 		blanks = new Blanks(core.screen.display);
 
 		var particle_blueprint: ParticleConfig<Blank> = {
-			velocity_x: 200,
-			velocity_y: 200,
+			velocity_x: 2000,
+			velocity_y: 2000,
 			lifetime: 2.2,
 			draw: (item, x, y) ->
 			{
 				item.x = x;
 				item.y = y;
 			},
-			change_angle: (item, angle) -> return,
+			change_angle: (item, angle) -> item.angle = angle,
 			change_alpha: (item, a) -> item.tint.a = a,
 			change_xy: (item, x, y) ->
 			{
@@ -33,7 +33,7 @@ class BlanksParticles extends Particles<Blank>
 
 		var cache: Cache<Particle<Blank>> = {
 			cached_items: [],
-			create: () -> new Particle(blanks.make(-100, -100, 4), particle_blueprint),
+			create: () -> new Particle(blanks.make(-100, -100, 8), particle_blueprint),
 			cache: particle -> particle.hide(),
 			item_limit: 256,
 		}

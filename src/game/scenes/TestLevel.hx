@@ -1,20 +1,22 @@
 package game.scenes;
 
+import lib.ldtk.TileMapping;
 import lib.peote.Elements;
 import lib.pure.Calculate;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
 import game.Core;
+import game.LdtkData;
 import game.actor.*;
 
 using lib.peote.TextureTools;
 
-class TestCombat extends GameScene
+class TestLevel extends GameScene
 {
+	var blanks: Blanks;
 	var sprites: Sprites;
 	var hero: Magician;
-	var enemies: Array<Enemy>;
-	var particles: BlanksParticles;
+	var level: LdtkData_Level;
 
 	public function new(core: Core)
 	{
@@ -47,7 +49,7 @@ class TestCombat extends GameScene
 		var sprite_texture = template_asset.tilesheet_from_image(tile_size, tile_size);
 		var scale = 4;
 		var sprite_size = tile_size * scale;
-		particles = new BlanksParticles(core);
+		blanks = new Blanks(core.screen.display);
 		sprites = new Sprites(
 			core.screen.display,
 			sprite_texture,
@@ -57,15 +59,15 @@ class TestCombat extends GameScene
 		);
 		hero = new Magician(100, 100, sprites);
 
-		var positions: Array<Array<Float>> = [[300, 300], [240, 30], [40, 400]];
-		enemies = [
-			for (pos in positions)
-				new Enemy(pos[0], pos[1], sprites, {
-					collision_radius: 16,
-					animation_tile_indexes: [67, 68]
-				})
-		];
-
+		var levels = new LdtkData();
+		level = levels.all_worlds.Default.levels[0];
+		iterate_layer(level.l_Tiles, (tile_stack, column, row) ->
+		{
+			// get the top tile of the stack only
+			var tile = tile_stack[tile_stack.length - 1];
+			var is_flipped_x = tile.flipBits == 1;
+			// if()
+		});
 		init_controller();
 	}
 
@@ -97,25 +99,12 @@ class TestCombat extends GameScene
 
 	override function update(elapsed_seconds: Float)
 	{
-		hero.update_(
-			elapsed_seconds,
-			enemies,
-			(x, y) -> particles.emit(x, y)
-		);
-		for (enemy in enemies)
-		{
-			enemy.update(elapsed_seconds);
-		}
-		particles.update(elapsed_seconds);
+		hero.update_(elapsed_seconds, []);
 	}
 
 	override function draw()
 	{
 		hero.draw();
-		for (enemy in enemies)
-		{
-			enemy.draw();
-		}
 		sprites.update_all();
 	}
 }

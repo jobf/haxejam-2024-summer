@@ -32,7 +32,7 @@ class Magician extends Actor
 		scroll = sprites.make(x, y, scroll_tile_index);
 	}
 
-	function update_(elapsed_seconds: Float, targets: Array<Enemy>)
+	function update_(elapsed_seconds: Float, targets: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void)
 	{
 		super.update(elapsed_seconds);
 		for (cached in cache.cached_items)
@@ -59,6 +59,7 @@ class Magician extends Actor
 						trace('hit!');
 						cached.item.is_expired = true;
 						target.damage(1);
+						on_hit(target.movement.position_x, target.movement.position_y);
 					}
 				}
 				if (cached.item.is_expired)

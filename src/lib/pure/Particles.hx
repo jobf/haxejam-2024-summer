@@ -118,8 +118,12 @@ class Particle<T>
 
 	function configure(x: Float, y: Float)
 	{
-		movement.acceleration_x = ((Math.random() * blueprint.velocity_x - (blueprint.velocity_x / 2))) * 0.7;
-		movement.acceleration_y = ((Math.random() * blueprint.velocity_y - (blueprint.velocity_y / 2))) * 0.7;
+		movement.velocity_x = 0;
+		movement.velocity_y = 0;
+		movement.deceleration_x = 0;
+		movement.deceleration_y = 0;
+		movement.acceleration_x = ((Math.random() * blueprint.velocity_x - (blueprint.velocity_x / 2)));
+		movement.acceleration_y = ((Math.random() * blueprint.velocity_y - (blueprint.velocity_y / 2)));
 		particle.lifetime = Std.int(Math.random() * blueprint.lifetime);
 		movement.velocity_max_x = blueprint.velocity_x;
 		movement.velocity_max_y = blueprint.velocity_x;
