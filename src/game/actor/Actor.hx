@@ -18,9 +18,9 @@ class Actor
 
 	var is_expired: Bool = false;
 	var animation_tile_indexes: Array<Int>;
-	var animation_frame_index: Int;
-	var animation_duration: Float = 0.45;
-	var animation_timer: Float = 0.45;
+	var animation_frame_index: Int = 0;
+	var animation_duration: Float = 0.25;
+	var animation_timer: Float = 0.25;
 	var direction_x: Int = 0;
 	var direction_y: Int = 0;
 	var health: Float = 1;

@@ -64,7 +64,7 @@ class Projectile extends Actor
 class ProjectileConfig
 {
 	var sprite: Sprite;
-	var life_time: Float = 2.8;
+	var life_time: Float = 0.3;
 	var speed: Float = 1000;
 	var animation_tile_indexes: Array<Int> = [0];
 }
