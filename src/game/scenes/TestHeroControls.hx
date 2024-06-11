@@ -2,6 +2,7 @@ package game.scenes;
 
 import lib.peote.Elements;
 import lib.pure.Calculate;
+import lime.ui.MouseButton;
 import lime.utils.Assets;
 import game.Actor;
 import game.Core;
@@ -40,59 +41,30 @@ class TestHeroControls extends GameScene {
 		var tile_size = 16;
 		var sprite_texture = template_asset.tilesheet_from_image(tile_size, tile_size);
 		var scale = 4;
-		var tile_size = tile_size * scale;
-		sprites = new Sprites(core.screen.display, sprite_texture, "sprites", tile_size, tile_size);
+		var sprite_size = tile_size * scale;
+		sprites = new Sprites(core.screen.display, sprite_texture, "sprites", sprite_size, sprite_size);
 		hero = new Magician(100, 100, sprites);
 		init_controller();
 	}
 
 	function init_controller() {
-		controller.left = {
-			on_press: () -> {
-				hero.move_in_direction_x(-1);
-			},
-			on_release: () -> {
-				hero.stop_x();
-			}
-		}
+		controller.left.on_press = () -> hero.move_in_direction_x(-1);
+		controller.left.on_release = () -> hero.stop_x();
 
-		controller.right = {
-			on_press: () -> {
-				hero.move_in_direction_x(1);
-			},
-			on_release: () -> {
-				hero.stop_x();
-			}
-		}
+		controller.right.on_press = () -> hero.move_in_direction_x(1);
+		controller.right.on_release = () -> hero.stop_x();
 
-		controller.up = {
-			on_press: () -> {
-				hero.move_in_direction_y(-1);
-			},
-			on_release: () -> {
-				hero.stop_y();
-			}
-		}
+		controller.up.on_press = () -> hero.move_in_direction_y(-1);
+		controller.up.on_release = () -> hero.stop_y();
 
-		controller.down = {
-			on_press: () -> {
-				hero.move_in_direction_y(1);
-			},
-			on_release: () -> {
-				hero.stop_y();
-			}
-		}
-		controller.a = {
-			on_press: () -> hero.dash()
-		}
+		controller.down.on_press = () -> hero.move_in_direction_y(1);
+		controller.down.on_release = () -> hero.stop_y();
 
-		controller.b = {
-			on_press: () -> hero.cast_spell()
-		}
-
-		controller.start.on_press = () -> {}
+		controller.a.on_press = () -> hero.dash();
 
 		core.input.change_target(controller);
+
+		core.window.onMouseDown.add((x, y, button) -> if (button == MouseButton.LEFT) hero.cast_spell(x > hero.movement.position_x ? 1 : -1));
 		core.window.onMouseMove.add((x, y) -> {
 			hero.scroll_follow_mouse(x, y);
 		});

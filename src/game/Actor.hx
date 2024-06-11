@@ -83,13 +83,13 @@ class Actor {
 @:structInit
 class ProjectileConfig {
 	var sprite:Sprite;
-	var life_time:Float = 5.0;
-	var speed:Float = 300;
+	var life_time:Float = 0.8;
+	var speed:Float = 1000;
 }
 
 class Projectile extends Actor {
 	var is_expired:Bool = false;
-	var is_updating:Bool = true;
+	var is_updating:Bool = false;
 	var config:ProjectileConfig;
 	var life_time:Float = 0;
 	var alpha:Float = 1;
@@ -100,28 +100,30 @@ class Projectile extends Actor {
 		this.config = config;
 	}
 
-	function emit(direction_x:Float, direction_y:Float) {}
-
 	override function update(elapsed_seconds:Float) {
-		if (is_updating) {
-			super.update(elapsed_seconds);
+		super.update(elapsed_seconds);
+		if (life_time > 0) {
 			life_time -= elapsed_seconds;
-			if (life_time <= 0) {
-				is_expired = true;
-			}
-			if (is_expired && sprite.tint.a > 0) {
-				alpha -= 0.01;
-				sprite.tint.a -= 1;
-			} else {
-				is_updating = false;
-			}
+			alpha -= 0.01;
+		} else {
+			is_expired = true;
+			trace('expire projectil');
+			// if (!is_expired) {
+			// }
 		}
+		trace(life_time);
 	}
 
 	public function reset(x:Float, y:Float, facing_x:Int) {
+		life_time = config.life_time;
+		trace('reset projectil $life_time');
 		is_expired = false;
 		is_updating = true;
 
+		movement.velocity_x = 0;
+		movement.velocity_y = 0;
+		movement.acceleration_x = 0;
+		movement.acceleration_y = 0;
 		movement.position_x = x;
 		movement.position_previous_x = x;
 		movement.position_y = y;
@@ -132,19 +134,26 @@ class Projectile extends Actor {
 		sprite.x = x;
 		sprite.y = y;
 	}
+
+	public function move_towards_angle(angle:Float) {
+		var angle_offset = -angle - 180;
+		sprite.angle = angle * to_degrees();
+		trace(sprite.angle);
+		movement.acceleration_x = Math.cos(angle_offset) * config.speed;
+		movement.acceleration_y = Math.sin(angle_offset) * config.speed;
+	}
 }
 
 class Magician extends Actor {
 	var cache:Cache<Projectile>;
 	var scroll:Sprite;
+	var mouse_angle:Float;
 
 	public function new(x:Float, y:Float, sprites:Sprites) {
 		cache = {
 			cached_items: [],
 			create: () -> new Projectile({
 				sprite: sprites.make(0, 0, 512),
-				life_time: 0.5,
-				speed: 50
 			}),
 			cache: projectile -> projectile.sprite.tint.a = 0,
 			item_limit: 15,
@@ -160,7 +169,8 @@ class Magician extends Actor {
 		for (cached in cache.cached_items) {
 			if (!cached.is_waiting) {
 				cached.item.update(elapsed_seconds);
-				if (!cached.item.is_updating) {
+				if (cached.item.is_expired) {
+					trace('put back in cache');
 					cache.put(cached.item);
 				}
 			}
@@ -177,29 +187,21 @@ class Magician extends Actor {
 		}
 	}
 
-	public function cast_spell() {
+	public function cast_spell(facing_x:Int) {
 		var projectile = cache.get();
 		if (projectile != null) {
-			var x = movement.position_x + (direction_x * sprite.width);
-			var y = movement.position_y + (direction_y * sprite.height);
-			projectile.reset(x, y, facing);
+			projectile.reset(movement.position_x, movement.position_y, facing_x);
 			projectile.sprite.tile_index = 0;
-
-			if (direction_x != 0) {
-				projectile.move_in_direction_x(direction_x);
-			}
-			if (direction_y != 0) {
-				projectile.move_in_direction_y(direction_y);
-			}
-			trace('cast spell');
+			projectile.move_towards_angle(mouse_angle);
 		}
 	}
 
 	public function scroll_follow_mouse(x:Float, y:Float) {
-		var angle = -radians_between(x, y, movement.position_x, movement.position_y) - 180;
-		scroll.x = movement.position_x + Math.cos(angle) * 40;
-		scroll.y = movement.position_y + Math.sin(angle) * 40;
-		// trace(scroll.angle);
+		mouse_angle = radians_between(x, y, movement.position_x, movement.position_y);
+		var angle_offset = -mouse_angle - 180;
+		scroll.x = movement.position_x + Math.cos(angle_offset) * 40;
+		scroll.y = movement.position_y + Math.sin(angle_offset) * 40;
+		// trace('scroll_follow_mouse radians $mouse_angle');
 	}
 
 	public function show_spells() {}
