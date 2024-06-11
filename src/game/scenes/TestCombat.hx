@@ -25,7 +25,7 @@ class TestCombat extends GameScene
 					label: "reset scene",
 					action: () -> core.scene_reset(),
 					is_valid: () -> true,
-					description: "WORLD",
+					description: "",
 					on_select: item -> trace("select"),
 					on_actioned: item -> trace("action"),
 					on_reset: item -> trace("reset"),
