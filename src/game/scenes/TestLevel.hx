@@ -7,6 +7,7 @@ import lib.pure.Calculate;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
 import peote.view.Color;
+import game.Configurations;
 import game.Core;
 import game.LdtkData;
 import game.actor.*;
@@ -19,6 +20,7 @@ class TestLevel extends GameScene
 	var tiles_level: Tiles;
 	var sprites: Sprites;
 	var hero: Magician;
+	var enemies: Array<Enemy>;
 	var level: LdtkData_Level;
 	var camera: Camera;
 
@@ -74,12 +76,9 @@ class TestLevel extends GameScene
 			sprite_size
 		);
 
-		hero = new Magician(150, 150, sprite_size, sprites);
-
 		var levels = new LdtkData();
 
 		level = levels.all_worlds.Default.levels[0];
-
 		var debug_level_collisions = false;
 		if (debug_level_collisions)
 		{
@@ -94,16 +93,49 @@ class TestLevel extends GameScene
 
 		iterate_layer(level.l_Tiles, (tile_stack, column, row) ->
 		{
-			for (tile in tile_stack)
-			{
-				var is_flipped_x = tile.flipBits == 1;
-				tiles_level.make_aligned(column, row, sprite_size, tile.tileId, is_flipped_x);
-			}
 			// get the top tile of the stack only
-			// var tile = tile_stack[tile_stack.length - 1];
-			// var is_flipped_x = tile.flipBits == 1;
-			// tiles_level.make_aligned(column, row, sprite_size, tile.tileId, is_flipped_x);
+			var tile = tile_stack[tile_stack.length - 1];
+			var is_flipped_x = tile.flipBits == 1;
+			tiles_level.make_aligned(column, row, sprite_size, tile.tileId, is_flipped_x);
 		});
+
+		iterate_layer(level.l_Decoration, (tile_stack, column, row) ->
+		{
+			// get the top tile of the stack only
+			var tile = tile_stack[tile_stack.length - 1];
+			var is_flipped_x = tile.flipBits == 1;
+			tiles_level.make_aligned(column, row, sprite_size, tile.tileId, is_flipped_x);
+		});
+
+		enemies = [
+			for (entity in level.l_Entities.all_Monsters)
+				new Enemy(
+					entity.cx * sprite_size,
+					entity.cy * sprite_size,
+					sprite_size,
+					sprites,
+					Configurations.monsters[entity.f_Monster]
+				)
+		];
+
+		var start_x = 150;
+		var start_y = 150;
+		for (entity in level.l_Entities.all_Mechanisms)
+		{
+			switch entity.f_Mechanism
+			{
+				case Start:
+					start_x = entity.cx * sprite_size;
+					start_y = entity.cy * sprite_size;
+				case _:
+					// case End:
+					// case Door:
+			}
+		}
+
+		for (entity in level.l_Entities.all_Pickups) {}
+
+		hero = new Magician(start_x, start_y, sprite_size, sprites);
 
 		camera = new Camera([core.screen.display_level_tiles, core.screen.display], {
 			view_width: core.screen.res_width,
@@ -160,10 +192,15 @@ class TestLevel extends GameScene
 	{
 		hero.update_(
 			elapsed_seconds,
-			[],
+			enemies,
 			(x, y) -> trace('hit $x $y'),
 			(grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
 		);
+
+		for (enemy in enemies)
+		{
+			enemy.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
+		}
 
 		var target_width_offset = (8 / 2);
 		var target_height_offset = (8 / 2);
@@ -177,6 +214,10 @@ class TestLevel extends GameScene
 	override function draw()
 	{
 		hero.draw();
+		for (enemy in enemies)
+		{
+			enemy.draw();
+		}
 		sprites.update_all();
 		camera.draw();
 	}
