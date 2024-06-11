@@ -12,6 +12,6 @@ Install the libs
 
 # run
 
-lime test html5
+    lime test html5
 
-Move with `w a s d` / `arrow keys` and cast a spell with `h`.
+Move with `w a s d` / `arrow keys` and cast a spell with mouse to aim and left left click.
