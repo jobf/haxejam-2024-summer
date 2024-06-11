@@ -4,8 +4,8 @@ import lib.peote.Elements;
 import lib.pure.Calculate;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
-import game.Actor;
 import game.Core;
+import game.actor.*;
 
 using lib.peote.TextureTools;
 
