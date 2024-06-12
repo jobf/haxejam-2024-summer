@@ -92,5 +92,7 @@ class Screen
 		var view_y = Std.int(((peote_view.height / scale) / 2) - (res_height / 2));
 		display.x = view_x;
 		display.y = view_y;
+		display_level_tiles.x = view_x;
+		display_level_tiles.y = view_y;
 	}
 }

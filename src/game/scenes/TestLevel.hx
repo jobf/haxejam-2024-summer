@@ -23,6 +23,7 @@ class TestLevel extends GameScene
 	var enemies: Array<Enemy>;
 	var level: LdtkData_Level;
 	var camera: Camera;
+	var particles: BlanksParticles;
 
 	public function new(core: Core)
 	{
@@ -136,14 +137,16 @@ class TestLevel extends GameScene
 		for (entity in level.l_Entities.all_Pickups) {}
 
 		hero = new Magician(start_x, start_y, sprite_size, sprites);
+		var level_edge_right = level.l_Tiles.pxWid * scale;
+		var level_edge_floor = level.l_Tiles.pxHei * scale;
 
 		camera = new Camera([core.screen.display_level_tiles, core.screen.display], {
 			view_width: core.screen.res_width,
 			view_height: core.screen.res_height,
 			boundary_left: 0,
-			boundary_right: level.l_Tiles.pxWid * scale,
+			boundary_right: level_edge_right,
 			boundary_ceiling: 0,
-			boundary_floor: level.l_Tiles.pxHei * scale,
+			boundary_floor: level_edge_floor,
 			zone_center_x: hero.movement.position_x,
 			zone_center_y: hero.movement.position_y,
 			zone_width: 128,
@@ -152,6 +155,10 @@ class TestLevel extends GameScene
 
 		camera.center_on(hero.movement.position_x, hero.movement.position_y);
 		camera.toggle_debug();
+
+		particles = new BlanksParticles(core);
+		particles.limits.width = level_edge_right;
+		particles.limits.height = level_edge_floor;
 
 		init_controller();
 	}
@@ -176,15 +183,17 @@ class TestLevel extends GameScene
 
 		core.window.onMouseDown.add((x, y, button) -> if (button == MouseButton.LEFT)
 		{
-			x = x - core.screen.display.xOffset;
-			hero.cast_spell(x / core.screen.peote_view.zoom > hero.movement.position_x ? 1 : -1);
+			x = (x - core.screen.display.xOffset) / core.screen.peote_view.zoom;
+			y = (y - core.screen.display.yOffset) / core.screen.peote_view.zoom;
+			// particles.emit(x, y);
+			hero.cast_spell(x > hero.movement.position_x ? 1 : -1);
 		});
 
 		core.window.onMouseMove.add((x, y) ->
 		{
-			x = x - core.screen.display.xOffset;
-			y = y - core.screen.display.yOffset;
-			hero.scroll_follow_mouse(x / core.screen.peote_view.zoom, y / core.screen.peote_view.zoom);
+			x = (x - core.screen.display.xOffset) / core.screen.peote_view.zoom;
+			y = (y - core.screen.display.yOffset) / core.screen.peote_view.zoom;
+			hero.scroll_follow_mouse(x, y);
 		});
 	}
 
@@ -193,7 +202,11 @@ class TestLevel extends GameScene
 		hero.update_(
 			elapsed_seconds,
 			enemies,
-			(x, y) -> trace('hit $x $y'),
+			(x, y) ->
+			{
+				trace('$x, $y');
+				particles.emit(x, y);
+			},
 			(grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
 		);
 
@@ -201,6 +214,8 @@ class TestLevel extends GameScene
 		{
 			enemy.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
 		}
+
+		particles.update(elapsed_seconds);
 
 		var target_width_offset = (8 / 2);
 		var target_height_offset = (8 / 2);
