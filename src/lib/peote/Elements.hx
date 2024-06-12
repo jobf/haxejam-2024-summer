@@ -90,6 +90,13 @@ class Blanks
 		return element;
 	}
 
+	function rect(x: Float, y: Float, width: Float, height: Float, tint: Int): Blank
+	{
+		var element = new Blank(Std.int(x), Std.int(y), Std.int(width), Std.int(height), tint, false);
+		buffer.addElement(element);
+		return element;
+	}
+
 	function make_aligned(column: Float, row: Float, align_px: Float, width_px: Float, height_px: Float, tint: Int, offset: Int): Blank
 	{
 		var element = new Blank(

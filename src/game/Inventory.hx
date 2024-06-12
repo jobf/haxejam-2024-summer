@@ -1,10 +1,10 @@
 package game;
 
+import game.Configurations;
 import lib.peote.Elements;
 import lib.peote.Glyph;
 import lime.utils.Assets;
 import peote.ui.interactive.UIElement;
-import game.Configurations;
 
 using lib.peote.TextureTools;
 
@@ -15,9 +15,13 @@ class Inventory
 	var tiles: Tiles;
 	var button_slots: Array<SpellButton> = [];
 	var active_slots: Array<SpellButton> = [];
+	var core: Core;
+	var blanks: Blanks;
 
 	function new(core: Core)
 	{
+		this.core = core;
+		blanks = new Blanks(core.screen.display_hud);
 		var font: FontModel = {
 			element_width: 16,
 			element_height: 16,
@@ -42,6 +46,15 @@ class Inventory
 
 		var slots_x = 20;
 		var slots_y = 20;
+
+		blanks.rect(
+			10,
+			10,
+			core.screen.res_width - 20,
+			core.screen.res_height - 20,
+			0x000000ff
+		);
+
 		var gap = 20;
 		for (r in 0...3)
 		{
@@ -87,6 +100,18 @@ class Inventory
 
 			core.screen.display_hud.add(button);
 			active_slots.push(button);
+		}
+	}
+
+	public function toggle_visibility()
+	{
+		if (core.screen.display_hud.isVisible)
+		{
+			core.screen.display_hud.hide();
+		}
+		else
+		{
+			core.screen.display_hud.show();
 		}
 	}
 
