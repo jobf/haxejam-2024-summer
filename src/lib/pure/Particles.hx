@@ -107,7 +107,7 @@ class Particle<T>
 			change_xy: blueprint.change_xy
 		};
 
-		movement = new MotionComponent(-100, -100);
+		movement = new MotionComponent(-100, -100, 4);
 	}
 
 	public function hide()

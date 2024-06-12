@@ -93,6 +93,23 @@ class MotionComponent
 		position_y = y;
 		position_previous_y = y;
 	}
+
+	function next_x(elapsed_seconds: Float): Float
+	{
+		// return (position_x / cell_size) + velocity_x;
+		return position_x + (velocity_x * elapsed_seconds);
+	}
+
+	function next_y(elapsed_seconds: Float): Float
+	{
+		return position_y + (velocity_y * elapsed_seconds);
+		// return (position_y / cell_size) + velocity_y;
+	}
+
+	function to_cell(pixel: Float): Int
+	{
+		return Std.int(pixel / cell_size);
+	}
 }
 
 class MotionComponentLogic

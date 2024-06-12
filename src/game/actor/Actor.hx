@@ -36,44 +36,33 @@ class Actor
 		movement.velocity_max_y = 300;
 	}
 
+	var scale = 4;
+
 	public function update(elapsed_seconds: Float, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
 	{
 		movement.compute_motion(elapsed_seconds);
 
-		var is_wall_left = has_wall_tile_at(movement.column - 1, movement.row);
-		var is_wall_right = has_wall_tile_at(movement.column + 1, movement.row);
-		var is_wall_up = has_wall_tile_at(movement.column, movement.row - 1);
-		var is_wall_down = has_wall_tile_at(movement.column, movement.row + 1);
-		if (movement.cell_ratio_x > 0.5 && is_wall_right)
-			// if (movement.velocity_x > 0 && grid_ratio_x > 0.2 && is_wall_right)
+		var next_x = movement.next_x(elapsed_seconds);
+		var next_column = movement.to_cell(next_x);
+		var next_y = movement.next_y(elapsed_seconds);
+		var next_row = movement.to_cell(next_y);
+		var direction_h = movement.velocity_x > 0 ? 1 : movement.velocity_x < 0 ? -1 : 0;
+		var direction_v = movement.velocity_y > 0 ? 1 : movement.velocity_y < 0 ? -1 : 0;
+		var is_collision_h = has_wall_tile_at(next_column + direction_h, movement.row);
+		var is_collision_v = has_wall_tile_at(movement.column, next_row + direction_v);
+
+		if (is_collision_h)
 		{
-			movement.position_x = movement.column * movement.cell_size;
+			movement.position_x = (next_column) * movement.cell_size;
 			movement.velocity_x = 0;
 			movement.acceleration_x = 0;
 		}
-
-		if (movement.cell_ratio_x < 0.5 && is_wall_left)
-			// if (movement.velocity_x < 0 && grid_ratio_y < 0.8 && is_wall_left)
+		if (is_collision_v)
 		{
-			movement.position_x = movement.column * movement.cell_size;
-			movement.velocity_x = 0;
-			movement.acceleration_x = 0;
-		}
-		if (movement.cell_ratio_y > 0.5 && is_wall_down)
-			// if (movement.velocity_y > 0 && grid_ratio_y > 0.2 && is_wall_down)
-		{
-			movement.position_y = movement.row * movement.cell_size;
+			movement.position_y = (next_row) * movement.cell_size;
 			movement.velocity_y = 0;
 			movement.acceleration_y = 0;
 		}
-		if (movement.cell_ratio_y < 0.5 && is_wall_up)
-			// if (movement.velocity_y < 0 && grid_ratio_y < 0.8 && is_wall_up)
-		{
-			movement.position_y = movement.row * movement.cell_size;
-			movement.velocity_y = 0;
-			movement.acceleration_y = 0;
-		}
-
 		if (health <= 0)
 		{
 			is_expired = true;
