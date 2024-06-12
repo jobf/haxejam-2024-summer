@@ -16,6 +16,7 @@ class Screen
 	var display_level_tiles: Display;
 	var display: Display;
 	var display_hud: PeoteUIDisplay;
+	var display_menu: PeoteUIDisplay;
 	var res_limits: Rectangle;
 
 	function new(peote_view: PeoteView, res_width: Int, res_height: Int)
@@ -33,10 +34,12 @@ class Screen
 		this.window_height = peote_view.window.height;
 		display_level_tiles = new Display(0, 0, res_width, res_height, Colors.TRANSPARENT);
 		display = new Display(0, 0, res_width, res_height, Colors.TRANSPARENT);
-		display_hud = new PeoteUIDisplay(0, 0, res_width, res_height, Colors.MAROON);
+		display_hud = new PeoteUIDisplay(0, 0, res_width, res_height, Colors.TRANSPARENT);
+		display_menu = new PeoteUIDisplay(0, 0, res_width, res_height, Colors.MAROON);
 		peote_view.addDisplay(display_level_tiles);
 		peote_view.addDisplay(display);
 		peote_view.addDisplay(display_hud);
+		peote_view.addDisplay(display_menu);
 		peote_view.window.onResize.add((width, height) ->
 		{
 			this.window_width = width;
@@ -47,14 +50,14 @@ class Screen
 		peote_view.start();
 	}
 
-	inline function display_hud_hide()
+	inline function display_menu_hide()
 	{
-		display_hud.hide();
+		display_menu.hide();
 	}
 
-	inline function display_hud_show()
+	inline function display_menu_show()
 	{
-		display_hud.show();
+		display_menu.show();
 	}
 
 	function fit_to_window()
