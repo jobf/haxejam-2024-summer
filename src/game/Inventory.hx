@@ -1,10 +1,10 @@
 package game;
 
-import game.Configurations;
 import lib.peote.Elements;
 import lib.peote.Glyph;
 import lime.utils.Assets;
 import peote.ui.interactive.UIElement;
+import game.Configurations;
 
 using lib.peote.TextureTools;
 
@@ -17,10 +17,21 @@ class Inventory
 	var active_slots: Array<SpellButton> = [];
 	var core: Core;
 	var blanks: Blanks;
+	var spell_config: SpellConfig;
 
 	function new(core: Core)
 	{
 		this.core = core;
+		spell_config = {
+			name: "",
+			tile_index: 31,
+			damage: 0,
+			hit_box: 0,
+			cool_down: 0,
+			duration: 0,
+			speed: 0,
+			key: EMPTY,
+		};
 		blanks = new Blanks(core.screen.display_hud);
 		var font: FontModel = {
 			element_width: 16,
@@ -67,7 +78,16 @@ class Inventory
 					y,
 					button_tile_size,
 					tiles.make(x, y, button_tile_size, button_tile_size, 31, false),
-					Configurations.spells[EMPTY],
+					{
+						name: "",
+						tile_index: 31,
+						damage: 0,
+						hit_box: 0,
+						cool_down: 0,
+						duration: 0,
+						speed: 0,
+						key: EMPTY,
+					},
 					activate
 				);
 
@@ -94,7 +114,16 @@ class Inventory
 					31,
 					false
 				),
-				Configurations.spells[EMPTY],
+				{
+					name: "",
+					tile_index: 31,
+					damage: 0,
+					hit_box: 0,
+					cool_down: 0,
+					duration: 0,
+					speed: 0,
+					key: EMPTY,
+				},
 				clear
 			);
 
@@ -117,6 +146,7 @@ class Inventory
 
 	function make_available(key: SpellType)
 	{
+		trace('make available $key');
 		var available = button_slots.filter(button -> key == button.config.key);
 		if (available.length == 0)
 		{
@@ -130,10 +160,47 @@ class Inventory
 				}
 			}
 		}
+		else
+		{
+			trace('is already available $key');
+		}
+	}
+
+	function combine()
+	{
+		var configs = active_slots.map(button -> button.config).filter(config -> config.key != EMPTY);
+		if (configs.length > 1)
+		{
+			trace('combine!');
+			var a = configs[0];
+			var b = configs[1];
+			spell_config.tile_index = a.tile_index;
+			spell_config.duration = a.duration + b.duration;
+			spell_config.hit_box = a.hit_box + b.hit_box;
+			spell_config.cool_down = a.cool_down + b.cool_down;
+			spell_config.speed = a.speed + b.speed;
+			spell_config.hit_box = a.hit_box + b.hit_box;
+			spell_config.damage = a.damage + b.damage;
+		}
+		else
+		{
+			var a = configs[0];
+			if (a != null)
+			{
+				spell_config.tile_index = a.tile_index;
+				spell_config.duration = a.duration;
+				spell_config.hit_box = a.hit_box;
+				spell_config.cool_down = a.cool_down;
+				spell_config.speed = a.speed;
+				spell_config.hit_box = a.hit_box;
+				spell_config.damage = a.damage;
+			}
+		}
 	}
 
 	function activate(key: SpellType)
 	{
+		trace('activate $key');
 		var already_set = active_slots.filter(button -> key == button.config.key);
 		if (already_set.length == 0)
 		{
@@ -146,18 +213,25 @@ class Inventory
 					break;
 				}
 			}
+			combine();
 		}
 	}
 
 	function clear(key: SpellType)
 	{
-		for (button in active_slots)
+		trace('clear $key');
+		var activated = active_slots.filter(button -> button.config.key != EMPTY);
+		if (activated.length > 1)
 		{
-			if (button.config.key == key)
+			for (button in active_slots)
 			{
-				button.change_spell(EMPTY);
-				tiles.update_element(button.tile);
-				break;
+				if (button.config.key == key)
+				{
+					button.change_spell(EMPTY);
+					tiles.update_element(button.tile);
+					trace('set button tile ${button.tile.tile_index}');
+					break;
+				}
 			}
 		}
 	}
@@ -187,14 +261,24 @@ class SpellButton extends UIElement
 				trace(0);
 			}
 		};
-		onPointerUp = (element, pointer_event) -> trace('release');
-		onPointerOver = (element, struct) -> trace('over');
-		onPointerOut = (element, struct) -> trace('out');
+		// onPointerUp = (element, pointer_event) -> trace('release');
+		// onPointerOver = (element, struct) -> trace('over');
+		// onPointerOut = (element, struct) -> trace('out');
 	}
 
 	public function change_spell(key: SpellType)
 	{
-		config = Configurations.spells[key];
+		var a = Configurations.spells[key];
+		config.tile_index = a.tile_index;
+		config.duration = a.duration;
+		config.hit_box = a.hit_box;
+		config.cool_down = a.cool_down;
+		config.speed = a.speed;
+		config.hit_box = a.hit_box;
+		config.damage = a.damage;
+		config.key = a.key;
+		trace('change to $key');
+		// config.dump();
 		tile.tile_index = config.tile_index;
 	}
 }
@@ -211,4 +295,9 @@ class SpellConfig
 	var duration: Float;
 	var speed: Float;
 	var key: SpellType;
+
+	function dump()
+	{
+		trace('spell $name\n$tile_index\n$damage\n$hit_box\n$cool_down\n$duration\n$speed\n$key\n\n');
+	}
 }

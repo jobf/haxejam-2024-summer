@@ -3,23 +3,25 @@ package game.actor;
 import lib.peote.Elements;
 import lib.pure.Cache;
 import lib.pure.Calculate;
+// import game.Configurations;
+import game.Inventory;
 
 class Magician extends Actor
 {
 	var cache: Cache<Projectile>;
 	var scroll: Sprite;
 	var mouse_angle: Float;
+	var inventory: Inventory;
 
-	public function new(x: Float, y: Float, cell_size: Int, sprites: Sprites)
+	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites)
 	{
 		cache = {
 			cached_items: [],
-			create: () -> new Projectile(cell_size, {
-				sprite: sprites.make(0, 0, 512),
-			}),
-			cache: projectile -> projectile.sprite.tint.a = 0,
+			create: () -> new Projectile(cell_size, sprites.make(0, 0, 512)),
+			cache: projectile -> projectile.hide(),
 			item_limit: 15,
 		};
+		health = 3;
 
 		var animation_tile_indexes = [32, 33];
 		super(
@@ -35,42 +37,78 @@ class Magician extends Actor
 
 		var scroll_tile_index = 34;
 		scroll = sprites.make(x, y, scroll_tile_index);
+		inventory = new Inventory(core);
+		inventory.make_available(STARMISSILE);
+		inventory.activate(STARMISSILE);
+		inventory.toggle_visibility();
 	}
 
-	function update_(elapsed_seconds: Float, targets: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
+	function update_(elapsed_seconds: Float, monsters: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
 	{
 		super.update(elapsed_seconds, has_wall_tile_at);
-		for (cached in cache.cached_items)
+
+		var monster_index = monsters.length;
+		while (monster_index-- > 0)
 		{
-			if (!cached.is_waiting)
+			var monster = monsters[monster_index];
+			if (!monster.is_expired)
 			{
-				cached.item.update(elapsed_seconds, has_wall_tile_at);
-				for (target in targets)
+				if (monster.health <= 0)
 				{
-					if (target.is_expired)
+					var distance_to_monster = distance_to_point(
+						movement.position_x,
+						movement.position_y,
+						monster.movement.position_x,
+						monster.movement.position_y
+					);
+					if (distance_to_monster < monster.config.collision_radius)
 					{
+						trace('pick up spell!');
+						inventory.make_available(monster.config.drop);
+						monster.is_expired;
+						monster.sprite.tint.a = 0;
+						monsters.remove(monster);
+					}
+				}
+				else
+				{
+					damage(1);
+				}
+			}
+		}
+
+		for (projectile in cache.cached_items)
+		{
+			if (!projectile.is_waiting)
+			{
+				projectile.item.update(elapsed_seconds, has_wall_tile_at);
+				for (monster in monsters)
+				{
+					if (monster.is_expired)
+					{
+						trace('monster.is_expired');
 						continue;
 					}
 
-					var distance_to_target = distance_to_point(
-						cached.item.movement.position_x,
-						cached.item.movement.position_y,
-						target.movement.position_x,
-						target.movement.position_y
+					var distance_to_monster = distance_to_point(
+						projectile.item.movement.position_x,
+						projectile.item.movement.position_y,
+						monster.movement.position_x,
+						monster.movement.position_y
 					);
 
-					if (distance_to_target < target.config.collision_radius)
+					if (distance_to_monster < monster.config.collision_radius)
 					{
 						trace('hit!');
-						cached.item.is_expired = true;
-						target.damage(1);
-						on_hit(target.movement.position_x, target.movement.position_y);
+						projectile.item.is_expired = true;
+						monster.damage(1);
+						on_hit(monster.movement.position_x, monster.movement.position_y);
 					}
 				}
-				if (cached.item.is_expired)
+				if (projectile.item.is_expired)
 				{
-					// trace('put back in cache');
-					cache.put(cached.item);
+					trace('put back in cache');
+					cache.put(projectile.item);
 				}
 			}
 		}
@@ -79,13 +117,10 @@ class Magician extends Actor
 	override function draw()
 	{
 		super.draw();
-		for (cached in cache.cached_items)
+		for (projectile in cache.cached_items)
 		{
-			if (!cached.is_waiting)
-			{
-				cached.item.sprite.tint.a = Std.int(cached.item.alpha * 0xff);
-				cached.item.draw();
-			}
+			projectile.item.sprite.tint.a = Std.int(projectile.item.alpha * 0xff);
+			projectile.item.draw();
 		}
 	}
 
@@ -94,8 +129,12 @@ class Magician extends Actor
 		var projectile = cache.get();
 		if (projectile != null)
 		{
-			projectile.reset(scroll.x, scroll.y, facing_x);
-			projectile.sprite.tile_index = 0;
+			projectile.reset(
+				movement.position_x,
+				movement.position_y,
+				facing_x,
+				inventory.spell_config
+			);
 			projectile.move_towards_angle(mouse_angle);
 		}
 	}
@@ -112,6 +151,4 @@ class Magician extends Actor
 		scroll.y = movement.position_y + Math.cos(mouse_angle) * 60;
 		// trace('scroll_follow_mouse radians $mouse_angle');
 	}
-
-	public function show_spells() {}
 }

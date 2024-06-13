@@ -63,11 +63,7 @@ class Actor
 			movement.velocity_y = 0;
 			movement.acceleration_y = 0;
 		}
-		if (health <= 0)
-		{
-			is_expired = true;
-			sprite.tint.a = 0;
-		}
+
 		if (movement.acceleration_x != 0 || movement.acceleration_y != 0)
 		{
 			animation_timer -= elapsed_seconds;

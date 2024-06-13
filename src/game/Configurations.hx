@@ -7,19 +7,23 @@ import game.actor.Enemy.EnemyConfig;
 var monsters: Map<Enum_Monster, EnemyConfig> = [
 	Skeleton => {
 		collision_radius: 16,
-		animation_tile_indexes: [67, 68]
+		animation_tile_indexes: [67, 68],
+		drop: BONESPEAR
 	},
 	Zombie => {
 		collision_radius: 16,
-		animation_tile_indexes: [64, 65]
+		animation_tile_indexes: [64, 65],
+		drop: PUNCH
 	},
 	Spider => {
 		collision_radius: 16,
-		animation_tile_indexes: [67, 68] // todo
+		animation_tile_indexes: [67, 68], // todo
+		drop: BONESPEAR
 	},
 	Necromancer => {
 		collision_radius: 16,
-		animation_tile_indexes: [67, 68] // todo
+		animation_tile_indexes: [67, 68], // todo
+		drop: SKELETON
 	},
 ];
 
@@ -101,7 +105,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	INFEST => {
 		name: "Infest",
 		tile_index: 1,
-		damage: 1,
+		damage: 10,
 		hit_box: 2,
 		cool_down: 5.0,
 		duration: 3.0,
@@ -130,7 +134,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	STARMISSILE => {
 		name: "Star missile",
-		tile_index: 1,
+		tile_index: 4,
 		damage: 10,
 		hit_box: 2,
 		cool_down: 0.5,

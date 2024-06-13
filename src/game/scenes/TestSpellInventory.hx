@@ -1,18 +1,17 @@
 package game.scenes;
 
-import game.Core;
-import game.Inventory;
-import game.actor.*;
 import lib.peote.Elements;
 import lib.pure.Calculate;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
+import game.Core;
+import game.Inventory;
+import game.actor.*;
 
 using lib.peote.TextureTools;
 
 class TestSpellInventory extends GameScene
 {
-	var inventory: Inventory;
 	var sprites: Sprites;
 	var hero: Magician;
 
@@ -56,16 +55,12 @@ class TestSpellInventory extends GameScene
 			sprite_size
 		);
 
-		hero = new Magician(200, 200, sprite_size, sprites);
+		hero = new Magician(core, 200, 200, sprite_size, sprites);
+		hero.inventory.make_available(PUNCH);
+		hero.inventory.make_available(BONESPEAR);
+		hero.inventory.make_available(FIREBALL);
 
-		inventory = new Inventory(core);
-
-		inventory.make_available(PUNCH);
-		inventory.make_available(FIREBALL);
-		inventory.make_available(BONESPEAR);
-		inventory.activate(PUNCH);
-
-		controller.a.on_press = () -> inventory.toggle_visibility();
+		controller.a.on_press = () -> hero.inventory.toggle_visibility();
 	}
 
 	override function update(elapsed_seconds: Float)
