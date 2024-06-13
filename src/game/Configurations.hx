@@ -54,7 +54,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	FIREBALL => {
 		name: "Fireball",
-		tile_index: 3,
+		tile_index: 4,
 		damage: 40,
 		hit_box: 16,
 		cool_down: 2.0,
@@ -64,7 +64,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	PUNCH => {
 		name: "Punch",
-		tile_index: 0,
+		tile_index: 6,
 		damage: 20,
 		hit_box: 8,
 		cool_down: 1.0,
@@ -74,7 +74,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	BONESPEAR => {
 		name: "Bone spear",
-		tile_index: 1,
+		tile_index: 3,
 		damage: 20,
 		hit_box: 4,
 		cool_down: 1.0,
@@ -84,7 +84,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	BOLT => {
 		name: "Holy bolt",
-		tile_index: 1,
+		tile_index: 2,
 		damage: 100,
 		hit_box: 4,
 		cool_down: 2.0,
@@ -94,7 +94,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	DRAGON => {
 		name: "Summon dragon",
-		tile_index: 1,
+		tile_index: 14,
 		damage: 30,
 		hit_box: 32,
 		cool_down: 60.0,
@@ -104,7 +104,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	INFEST => {
 		name: "Infest",
-		tile_index: 1,
+		tile_index: 7,
 		damage: 10,
 		hit_box: 2,
 		cool_down: 5.0,
@@ -114,7 +114,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	LIGHTNING => {
 		name: "Lightning Strike",
-		tile_index: 1,
+		tile_index: 0,
 		damage: 50,
 		hit_box: 2,
 		cool_down: 1.0,
@@ -124,7 +124,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	SKELETON => {
 		name: "Summon Skeleton",
-		tile_index: 1,
+		tile_index: 15,
 		damage: 10,
 		hit_box: 8,
 		cool_down: 60.0,
@@ -134,7 +134,7 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 	STARMISSILE => {
 		name: "Star missile",
-		tile_index: 4,
+		tile_index: 8,
 		damage: 10,
 		hit_box: 2,
 		cool_down: 0.5,

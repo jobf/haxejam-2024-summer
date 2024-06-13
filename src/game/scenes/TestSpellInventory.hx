@@ -56,9 +56,15 @@ class TestSpellInventory extends GameScene
 		);
 
 		hero = new Magician(core, 200, 200, sprite_size, sprites);
+		hero.inventory.make_available(STARMISSILE);
+		hero.inventory.make_available(FIREBALL);
 		hero.inventory.make_available(PUNCH);
 		hero.inventory.make_available(BONESPEAR);
-		hero.inventory.make_available(FIREBALL);
+		hero.inventory.make_available(BOLT);
+		hero.inventory.make_available(DRAGON);
+		hero.inventory.make_available(INFEST);
+		hero.inventory.make_available(LIGHTNING);
+		hero.inventory.make_available(SKELETON);
 
 		controller.a.on_press = () -> hero.inventory.toggle_visibility();
 	}
