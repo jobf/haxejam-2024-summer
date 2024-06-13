@@ -13,9 +13,9 @@ class MotionComponent
 
 		this.cell_size = cell_size;
 		column = Std.int(x / cell_size);
-		cell_ratio_x = x - (column * cell_size);
+		cell_ratio_x = (column * cell_size) - x;
 		row = Std.int(y / cell_size);
-		cell_ratio_y = y - (row * cell_size);
+		cell_ratio_y = (row * cell_size) - y;
 	}
 
 	var cell_size: Int;
@@ -132,15 +132,18 @@ class MotionComponentLogic
 			elapsed_seconds
 		)
 			- motion.velocity_x);
+
 		motion.velocity_x = motion.velocity_x + vel_delta;
 		var movement_delta = motion.velocity_x * elapsed_seconds;
 		// keep record of previous position before setting new position based on the movement delta
 		motion.position_previous_x = motion.position_x;
 		motion.position_x = motion.position_x + movement_delta;
-		motion.column = Std.int(motion.position_x / motion.cell_size);
-		motion.cell_ratio_x = motion.position_x - (motion.column * motion.cell_size);
-		motion.row = Std.int(motion.position_y / motion.cell_size);
-		motion.cell_ratio_y = motion.position_y - (motion.row * motion.cell_size);
+
+		// trace grid location
+		var column = motion.position_x / motion.cell_size;
+		motion.column = Std.int(column);
+		motion.cell_ratio_x = column - motion.column;
+
 		// update y axis position and speed
 		var vel_delta = 0.5 * (compute_axis(
 			motion.velocity_y,
@@ -150,11 +153,17 @@ class MotionComponentLogic
 			elapsed_seconds
 		)
 			- motion.velocity_y);
+
 		motion.velocity_y = motion.velocity_y + vel_delta;
 		var movement_delta = motion.velocity_y * elapsed_seconds;
 		// keep record of previous position before setting new position based on the movement delta
 		motion.position_previous_y = motion.position_y;
 		motion.position_y = motion.position_y + movement_delta;
+
+		// trace grid location
+		var row = motion.position_y / motion.cell_size;
+		motion.row = Std.int(row);
+		motion.cell_ratio_y = row - motion.row;
 	}
 
 	/**

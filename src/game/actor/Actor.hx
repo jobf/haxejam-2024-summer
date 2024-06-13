@@ -46,20 +46,37 @@ class Actor
 		var next_column = movement.to_cell(next_x);
 		var next_y = movement.next_y(elapsed_seconds);
 		var next_row = movement.to_cell(next_y);
-		var direction_h = movement.velocity_x > 0 ? 1 : movement.velocity_x < 0 ? -1 : 0;
-		var direction_v = movement.velocity_y > 0 ? 1 : movement.velocity_y < 0 ? -1 : 0;
+		var direction_h = movement.velocity_x > 0 ? 1 : movement.velocity_x < 0 ? 0 : 0;
+		var direction_v = movement.velocity_y > 0 ? 1 : movement.velocity_y < 0 ? 0 : 0;
 		var is_collision_h = has_wall_tile_at(next_column + direction_h, movement.row);
 		var is_collision_v = has_wall_tile_at(movement.column, next_row + direction_v);
 
 		if (is_collision_h)
 		{
-			movement.position_x = (next_column) * movement.cell_size;
+			if (direction_x > 0)
+			{
+				movement.position_x = (next_column) * movement.cell_size;
+			}
+			else
+			{
+				movement.position_x = (movement.column) * movement.cell_size;
+			}
+			// sprite.tint.a = 0x50;
 			movement.velocity_x = 0;
 			movement.acceleration_x = 0;
 		}
 		if (is_collision_v)
 		{
-			movement.position_y = (next_row) * movement.cell_size;
+			if (direction_y > 0)
+			{
+				movement.position_y = (next_row) * movement.cell_size;
+			}
+			else
+			{
+				movement.position_y = (movement.row) * movement.cell_size;
+			}
+			trace(movement.cell_ratio_y);
+			// sprite.tint.a = 0x50;
 			movement.velocity_y = 0;
 			movement.acceleration_y = 0;
 		}
@@ -89,6 +106,7 @@ class Actor
 
 	public function move_in_direction_x(direction: Int)
 	{
+		// sprite.tint.a = 0xff;
 		if (direction != 0)
 		{
 			facing = direction;
@@ -106,6 +124,7 @@ class Actor
 
 	public function move_in_direction_y(direction: Int)
 	{
+		// sprite.tint.a = 0xff;
 		movement.acceleration_y = direction * speed;
 		direction_y = direction;
 		direction_x = 0;

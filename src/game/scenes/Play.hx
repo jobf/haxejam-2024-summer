@@ -238,4 +238,10 @@ class Play extends GameScene
 		sprites.update_all();
 		camera.draw();
 	}
+
+	override function clean_up()
+	{
+		sprites.clear();
+		blanks.clear();
+	}
 }
