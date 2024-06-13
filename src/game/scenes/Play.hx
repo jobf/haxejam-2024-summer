@@ -3,6 +3,7 @@ package game.scenes;
 import lib.ldtk.TileMapping;
 import lib.peote.Camera;
 import lib.peote.Elements;
+import lib.pure.Bresenham;
 import lib.pure.Calculate;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
@@ -79,8 +80,11 @@ class Play extends GameScene
 
 		var levels = new LdtkData();
 
-		level = levels.all_worlds.Default.levels[0];
+		var level_index = 1; // test level
+		var level_index = 0;
 		var debug_level_collisions = false;
+
+		level = levels.all_worlds.Default.levels[level_index];
 		if (debug_level_collisions)
 		{
 			var level_tile_offset = 0;
@@ -212,9 +216,58 @@ class Play extends GameScene
 			(grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
 		);
 
-		for (enemy in enemies)
+		var monster_index = enemies.length;
+		while (monster_index-- > 0)
 		{
-			enemy.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
+			var monster = enemies[monster_index];
+
+			monster.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
+			if (!monster.is_expired)
+			{
+				if (monster.health > 0)
+				{
+					var x_grid_distance = Math.abs(hero.movement.column - monster.movement.column);
+					var y_grid_distance = Math.abs(hero.movement.row - monster.movement.row);
+					// fast distance check - is distance close enough to be seen?
+					final sight_grid_limit = 3;
+					var do_line_of_sight_check = x_grid_distance <= sight_grid_limit && y_grid_distance <= sight_grid_limit;
+					if (do_line_of_sight_check)
+					{
+						var is_hero_in_sight = !is_line_blocked(
+							hero.movement.column,
+							hero.movement.row,
+							monster.movement.column,
+							monster.movement.row,
+							(grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
+						);
+						// monster.sprite.tint.a = 0xff;
+						if (is_hero_in_sight)
+						{
+							// monster.sprite.tint.a = 0x40;
+							var angle = Math.atan2(hero.movement.position_y - monster.movement.position_y,
+								hero.movement.position_x - monster.movement.position_x);
+							monster.move_towards_angle(angle);
+						}
+					}
+				}
+				var is_overlapping_hero = hero.movement.column == monster.movement.column && hero.movement.row == monster.movement.row;
+
+				if (is_overlapping_hero)
+				{
+					if (monster.health <= 0)
+					{
+						trace('pick up spell!');
+						hero.inventory.make_available(monster.config.drop);
+						monster.is_expired = true;
+						monster.sprite.tint.a = 0;
+						enemies.remove(monster);
+					}
+					else
+					{
+						hero.damage(1); // todo - proper damage
+					}
+				}
+			}
 		}
 
 		particles.update(elapsed_seconds);

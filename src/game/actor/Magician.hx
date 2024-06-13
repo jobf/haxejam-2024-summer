@@ -47,36 +47,6 @@ class Magician extends Actor
 	{
 		super.update(elapsed_seconds, has_wall_tile_at);
 
-		var monster_index = monsters.length;
-		while (monster_index-- > 0)
-		{
-			var monster = monsters[monster_index];
-			if (!monster.is_expired)
-			{
-				if (monster.health <= 0)
-				{
-					var distance_to_monster = distance_to_point(
-						movement.position_x,
-						movement.position_y,
-						monster.movement.position_x,
-						monster.movement.position_y
-					);
-					if (distance_to_monster < monster.config.collision_radius)
-					{
-						trace('pick up spell!');
-						inventory.make_available(monster.config.drop);
-						monster.is_expired;
-						monster.sprite.tint.a = 0;
-						monsters.remove(monster);
-					}
-				}
-				else
-				{
-					damage(1);
-				}
-			}
-		}
-
 		for (projectile in cache.cached_items)
 		{
 			if (!projectile.is_waiting)

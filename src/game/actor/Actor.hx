@@ -34,6 +34,12 @@ class Actor
 		movement.deceleration_y = 2000;
 		movement.velocity_max_x = 300;
 		movement.velocity_max_y = 300;
+		movement.compute_motion(0);
+	}
+
+	function is_moving(): Bool
+	{
+		return movement.velocity_x != 0 || movement.velocity_y != 0;
 	}
 
 	var scale = 4;

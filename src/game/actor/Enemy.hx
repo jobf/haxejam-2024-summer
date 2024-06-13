@@ -7,6 +7,8 @@ import game.Configurations;
 class Enemy extends Actor
 {
 	var config: EnemyConfig;
+	var attention_duration: Float = 1.25;
+	var attention_timer: Float = 1.25;
 
 	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig)
 	{
@@ -20,6 +22,13 @@ class Enemy extends Actor
 			),
 			config.animation_tile_indexes
 		);
+
+		speed = 130;
+		movement.velocity_max_x = 100;
+		movement.velocity_max_y = 100;
+
+		movement.deceleration_x = 4000;
+		movement.deceleration_x = 4000;
 	}
 
 	override function update(elapsed_seconds: Float, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
@@ -29,6 +38,26 @@ class Enemy extends Actor
 		{
 			sprite.tile_index = Configurations.spells[config.drop].tile_index;
 		}
+		else
+		{
+			if (is_moving())
+			{
+				attention_timer -= elapsed_seconds;
+				if (attention_timer <= 0)
+				{
+					movement.acceleration_x = 0;
+					movement.acceleration_y = 0;
+					attention_timer = attention_duration;
+				}
+			}
+		}
+	}
+
+	public function move_towards_angle(angle: Float)
+	{
+		// trace(sprite.angle);
+		movement.acceleration_x = Math.cos(angle) * speed;
+		movement.acceleration_y = Math.sin(angle) * speed;
 	}
 }
 

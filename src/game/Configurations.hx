@@ -7,7 +7,7 @@ import game.actor.Enemy.EnemyConfig;
 var monsters: Map<Enum_Monster, EnemyConfig> = [
 	Skeleton => {
 		collision_radius: 16,
-		animation_tile_indexes: [67, 68],
+		animation_tile_indexes: [66, 67],
 		drop: BONESPEAR
 	},
 	Zombie => {
