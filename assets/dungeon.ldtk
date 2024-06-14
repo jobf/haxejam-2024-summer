@@ -426,7 +426,8 @@
 			{ "id": "Skeleton", "tileRect": null, "color": 12470831 },
 			{ "id": "Zombie", "tileRect": null, "color": 14120515 },
 			{ "id": "Spider", "tileRect": null, "color": 15389866 },
-			{ "id": "Necromancer", "tileRect": null, "color": 14984818 }
+			{ "id": "Necromancer", "tileRect": null, "color": 14984818 },
+			{ "id": "Dragon", "tileRect": null, "color": 7552569 }
 		], "iconTilesetUid": null, "externalRelPath": null, "externalFileChecksum": null, "tags": [] },
 		{ "identifier": "Mechanism", "uid": 21, "values": [
 			{ "id": "Start", "tileRect": null, "color": 12470831 },

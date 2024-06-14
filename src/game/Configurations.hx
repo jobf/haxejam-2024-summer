@@ -5,6 +5,7 @@ import game.LdtkData;
 
 var monsters: Map<Enum_Monster, EnemyConfig> = [
 	Skeleton => {
+		tile_size: _16,
 		collision_radius: 16,
 		animation_tile_indexes: [66, 67],
 		drop: BONESPEAR,
@@ -17,6 +18,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 3
 	},
 	Zombie => {
+		tile_size: _16,
 		collision_radius: 16,
 		animation_tile_indexes: [64, 65],
 		drop: PUNCH,
@@ -29,8 +31,9 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 4
 	},
 	Spider => {
+		tile_size: _16,
 		collision_radius: 16,
-		animation_tile_indexes: [67, 68], // todo
+		animation_tile_indexes: [66, 67], // todo
 		drop: BONESPEAR,
 		velocity_max: 100,
 		deceleration: 4000,
@@ -41,8 +44,22 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 3
 	},
 	Necromancer => {
+		tile_size: _32,
 		collision_radius: 16,
-		animation_tile_indexes: [67, 68], // todo
+		animation_tile_indexes: [0, 1], // todo
+		drop: SKELETON,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 130,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 20,
+		sight_grid_limit: 5
+	},
+	Dragon => {
+		tile_size: _64,
+		collision_radius: 16,
+		animation_tile_indexes: [0, 1, 2, 3, 4, 5], // todo
 		drop: SKELETON,
 		velocity_max: 100,
 		deceleration: 4000,
@@ -59,6 +76,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 class EnemyConfig
 {
 	var collision_radius: Float;
+	var tile_size:TileSize;
 	var animation_tile_indexes: Array<Int>;
 	var drop: SpellType;
 	var velocity_max: Float;
@@ -70,6 +88,11 @@ class EnemyConfig
 	var sight_grid_limit:Int;
 }
 
+enum TileSize{
+	_16;
+	_32;
+	_64;
+}
 enum SpellType
 {
 	EMPTY;

@@ -12,6 +12,7 @@ import peote.view.Color;
 import game.Configurations;
 import game.Core;
 import game.LdtkData;
+import game.MonsterSprites;
 import game.actor.*;
 
 using lib.peote.TextureTools;
@@ -20,7 +21,7 @@ class Play extends GameScene
 {
 	var blanks: Blanks;
 	var tiles_level: Tiles;
-	var sprites: Sprites;
+	var monsters: MonsterSprites;
 	var hero: Magician;
 	var enemies: Array<Enemy>;
 	var level: LdtkData_Level;
@@ -57,7 +58,7 @@ class Play extends GameScene
 		super.begin();
 		var tile_size = 16;
 		var scale = 4;
-		var sprite_size = tile_size * scale;
+		var cell_size = tile_size * scale;
 
 		var tiles_asset = Assets.getImage("assets/dungeon-tiles-16.png");
 		var tiles_texture = tiles_asset.tilesheet_from_image(tile_size, tile_size);
@@ -65,22 +66,16 @@ class Play extends GameScene
 			core.screen.display_level_tiles,
 			tiles_texture,
 			"tiles",
-			sprite_size,
-			sprite_size
+			cell_size,
+			cell_size
 		);
 
 		blanks = new Blanks(core.screen.display_level_tiles);
 
+		monsters = new MonsterSprites(core, scale);
+		
 		var sprite_asset = Assets.getImage("assets/sprites-16.png");
 		var sprite_texture = sprite_asset.tilesheet_from_image(tile_size, tile_size);
-		sprites = new Sprites(
-			core.screen.display,
-			sprite_texture,
-			"sprites",
-			sprite_size,
-			sprite_size
-		);
-
 		projectile_sprites = new Sprites(
 			core.screen.display,
 			sprite_texture,
@@ -91,7 +86,7 @@ class Play extends GameScene
 
 		monster_projectiles = {
 			cached_items: [],
-			create: () -> new Projectile(sprite_size, projectile_sprites.make(0, 0, 512)),
+			create: () -> new Projectile(cell_size, projectile_sprites.make(0, 0, 512)),
 			cache: projectile -> projectile.hide(),
 			item_limit: 250,
 		};
@@ -110,7 +105,7 @@ class Play extends GameScene
 			debug_color.a = 0x55;
 			iterate_grid(level.l_Collision, (value, column, row) ->
 			{
-				blanks.make_aligned(column, row, sprite_size, sprite_size, sprite_size, debug_color, level_tile_offset);
+				blanks.make_aligned(column, row, cell_size, cell_size, cell_size, debug_color, level_tile_offset);
 			});
 		}
 
@@ -119,7 +114,7 @@ class Play extends GameScene
 			// get the top tile of the stack only
 			var tile = tile_stack[tile_stack.length - 1];
 			var is_flipped_x = tile.flipBits == 1;
-			tiles_level.make_aligned(column, row, sprite_size, tile.tileId, is_flipped_x);
+			tiles_level.make_aligned(column, row, cell_size, tile.tileId, is_flipped_x);
 		});
 
 		iterate_layer(level.l_Decoration, (tile_stack, column, row) ->
@@ -127,9 +122,8 @@ class Play extends GameScene
 			// get the top tile of the stack only
 			var tile = tile_stack[tile_stack.length - 1];
 			var is_flipped_x = tile.flipBits == 1;
-			tiles_level.make_aligned(column, row, sprite_size, tile.tileId, is_flipped_x);
+			tiles_level.make_aligned(column, row, cell_size, tile.tileId, is_flipped_x);
 		});
-
 
 		var start_x = 150;
 		var start_y = 150;
@@ -138,8 +132,8 @@ class Play extends GameScene
 			switch entity.f_Mechanism
 			{
 				case Start:
-					start_x = entity.cx * sprite_size;
-					start_y = entity.cy * sprite_size;
+					start_x = entity.cx * cell_size;
+					start_y = entity.cy * cell_size;
 				case _:
 					// case End:
 					// case Door:
@@ -148,22 +142,25 @@ class Play extends GameScene
 
 		for (entity in level.l_Entities.all_Pickups) {}
 
-		hero = new Magician(core, start_x, start_y, sprite_size, sprites, projectile_sprites);
+		hero = new Magician(core, start_x, start_y, cell_size, monsters.get_sprites(_16), projectile_sprites);
 
 		enemies = [
 			for (entity in level.l_Entities.all_Monsters)
+			{
+				var config = Configurations.monsters[entity.f_Monster];
+				
 				new Enemy(
-					entity.cx * sprite_size,
-					entity.cy * sprite_size,
-					sprite_size,
-					sprites,
-					Configurations.monsters[entity.f_Monster],
+					entity.cx * cell_size,
+					entity.cy * cell_size,
+					cell_size,
+					monsters.get_sprites(config.tile_size),
+					config,
 					monster_projectiles,
 					hero
-				)
+				);
+			}
 		];
 
-		
 		var level_edge_right = level.l_Tiles.pxWid * scale;
 		var level_edge_floor = level.l_Tiles.pxHei * scale;
 
@@ -309,15 +306,16 @@ class Play extends GameScene
 			projectile.item.sprite.tint.a = Std.int(projectile.item.alpha * 0xff);
 			projectile.item.draw();
 		}
-
 		projectile_sprites.update_all();
-		sprites.update_all();
+		monsters.draw();
 		camera.draw();
 	}
 
 	override function clean_up()
 	{
-		sprites.clear();
+		projectile_sprites.clear();
+		monsters.clear();
+		tiles_level.clear();
 		blanks.clear();
 	}
 }
