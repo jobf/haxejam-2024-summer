@@ -1,10 +1,12 @@
 package game.actor;
 
+import lib.peote.Elements;
+import lib.pure.Bresenham;
+import lib.pure.Cache;
+import lib.pure.Calculate;
+import lib.pure.Countdown;
 import game.Configurations;
 import game.Inventory.SpellConfig;
-import lib.peote.Elements;
-import lib.pure.Cache;
-import lib.pure.Countdown;
 
 @:publicFields
 class Enemy extends Actor
@@ -16,14 +18,16 @@ class Enemy extends Actor
 	var cache: Cache<Projectile>;
 
 	var target_angle: Null<Float> = null;
-	var spell_config:SpellConfig;
+	var spell_config: SpellConfig;
+	var hero: Magician;
 
-	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig, cache: Cache<Projectile>)
+	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician)
 	{
 		this.cache = cache;
+		this.hero = hero;
 		this.config = config;
 		this.spell_config = Configurations.spells[config.drop];
-		
+
 		super(
 			cell_size,
 			sprites.make(
@@ -71,6 +75,52 @@ class Enemy extends Actor
 				stop_moving_countdown.update(elapsed_seconds);
 			}
 			shooting_countdown.update(elapsed_seconds);
+
+			var x_grid_distance = Math.abs(hero.movement.column - movement.column);
+			var y_grid_distance = Math.abs(hero.movement.row - movement.row);
+			// fast distance check - is distance close enough to be seen?
+			final sight_grid_limit = 3;
+			var do_line_of_sight_check = x_grid_distance <= sight_grid_limit && y_grid_distance <= sight_grid_limit;
+			if (do_line_of_sight_check)
+			{
+				var is_hero_in_sight = !is_line_blocked(
+					hero.movement.column,
+					hero.movement.row,
+					movement.column,
+					movement.row,
+					has_wall_tile_at
+					// (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
+				);
+				// monster.sprite.tint.a = 0xff;
+				if (is_hero_in_sight)
+				{
+					// monster.sprite.tint.a = 0x40;
+					target_angle = Math.atan2(hero.movement.position_y - movement.position_y, hero.movement.position_x - movement.position_x);
+					move_towards_angle(target_angle);
+				}
+				else
+				{
+					target_angle = null;
+				}
+			}
+			// todo (better distance check for overlap)
+			var is_overlapping_hero = x_grid_distance == 0 && y_grid_distance == 0; // hero.movement.column == monster.movement.column && hero.movement.row == monster.movement.row;
+
+			if (is_overlapping_hero)
+			{
+				if (health <= 0)
+				{
+					trace('pick up spell!');
+					hero.inventory.make_available(config.drop);
+					is_expired = true;
+					sprite.tint.a = 0;
+					// enemies.remove(monster);
+				}
+				else
+				{
+					hero.damage(1); // todo - proper damage
+				}
+			}
 		}
 	}
 
@@ -98,7 +148,13 @@ class Enemy extends Actor
 				1,
 				spell_config
 			);
-			projectile.move_towards_angle(target_angle);
+			var angle = radians_between(
+				hero.movement.position_x,
+				hero.movement.position_y,
+				movement.position_x,
+				movement.position_y
+			);
+			projectile.move_towards_angle(angle);
 		}
 	}
 }

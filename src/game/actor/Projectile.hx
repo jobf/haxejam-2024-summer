@@ -57,10 +57,10 @@ class Projectile extends Actor
 
 	public function move_towards_angle(angle: Float)
 	{
-		sprite.angle = angle;
+		// sprite.angle = angle;
 		// trace(sprite.angle);
-		movement.acceleration_x = Math.sin(angle) * speed;
 		movement.acceleration_y = Math.cos(angle) * speed;
+		movement.acceleration_x = Math.sin(angle) * speed;
 	}
 
 	public function hide()

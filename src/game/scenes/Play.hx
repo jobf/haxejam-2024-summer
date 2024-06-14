@@ -1,9 +1,5 @@
 package game.scenes;
 
-import game.Configurations;
-import game.Core;
-import game.LdtkData;
-import game.actor.*;
 import lib.ldtk.TileMapping;
 import lib.peote.Camera;
 import lib.peote.Elements;
@@ -13,6 +9,10 @@ import lib.pure.Calculate;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
 import peote.view.Color;
+import game.Configurations;
+import game.Core;
+import game.LdtkData;
+import game.actor.*;
 
 using lib.peote.TextureTools;
 
@@ -130,17 +130,6 @@ class Play extends GameScene
 			tiles_level.make_aligned(column, row, sprite_size, tile.tileId, is_flipped_x);
 		});
 
-		enemies = [
-			for (entity in level.l_Entities.all_Monsters)
-				new Enemy(
-					entity.cx * sprite_size,
-					entity.cy * sprite_size,
-					sprite_size,
-					sprites,
-					Configurations.monsters[entity.f_Monster],
-					monster_projectiles
-				)
-		];
 
 		var start_x = 150;
 		var start_y = 150;
@@ -161,6 +150,20 @@ class Play extends GameScene
 
 		hero = new Magician(core, start_x, start_y, sprite_size, sprites);
 
+		enemies = [
+			for (entity in level.l_Entities.all_Monsters)
+				new Enemy(
+					entity.cx * sprite_size,
+					entity.cy * sprite_size,
+					sprite_size,
+					sprites,
+					Configurations.monsters[entity.f_Monster],
+					monster_projectiles,
+					hero
+				)
+		];
+
+		
 		var level_edge_right = level.l_Tiles.pxWid * scale;
 		var level_edge_floor = level.l_Tiles.pxHei * scale;
 
@@ -267,52 +270,9 @@ class Play extends GameScene
 		{
 			var monster = enemies[monster_index];
 
-			monster.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
 			if (!monster.is_expired)
 			{
-				if (monster.health > 0)
-				{
-					var x_grid_distance = Math.abs(hero.movement.column - monster.movement.column);
-					var y_grid_distance = Math.abs(hero.movement.row - monster.movement.row);
-					// fast distance check - is distance close enough to be seen?
-					final sight_grid_limit = 3;
-					var do_line_of_sight_check = x_grid_distance <= sight_grid_limit && y_grid_distance <= sight_grid_limit;
-					if (do_line_of_sight_check)
-					{
-						var is_hero_in_sight = !is_line_blocked(
-							hero.movement.column,
-							hero.movement.row,
-							monster.movement.column,
-							monster.movement.row,
-							(grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
-						);
-						// monster.sprite.tint.a = 0xff;
-						if (is_hero_in_sight)
-						{
-							// monster.sprite.tint.a = 0x40;
-							var angle = Math.atan2(hero.movement.position_y - monster.movement.position_y,
-								hero.movement.position_x - monster.movement.position_x);
-							monster.target(angle);
-						}
-					}
-				}
-				var is_overlapping_hero = hero.movement.column == monster.movement.column && hero.movement.row == monster.movement.row;
-
-				if (is_overlapping_hero)
-				{
-					if (monster.health <= 0)
-					{
-						trace('pick up spell!');
-						hero.inventory.make_available(monster.config.drop);
-						monster.is_expired = true;
-						monster.sprite.tint.a = 0;
-						enemies.remove(monster);
-					}
-					else
-					{
-						hero.damage(1); // todo - proper damage
-					}
-				}
+				monster.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
 			}
 		}
 
