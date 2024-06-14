@@ -1,18 +1,29 @@
 package game.actor;
 
-import lib.peote.Elements;
 import game.Configurations;
+import game.Inventory.SpellConfig;
+import lib.peote.Elements;
+import lib.pure.Cache;
+import lib.pure.Countdown;
 
 @:publicFields
 class Enemy extends Actor
 {
 	var config: EnemyConfig;
-	var attention_duration: Float = 1.25;
-	var attention_timer: Float = 1.25;
+	var stop_moving_countdown: Countdown;
+	var shooting_countdown: Countdown;
 
-	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig)
+	var cache: Cache<Projectile>;
+
+	var target_angle: Null<Float> = null;
+	var spell_config:SpellConfig;
+
+	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig, cache: Cache<Projectile>)
 	{
+		this.cache = cache;
 		this.config = config;
+		this.spell_config = Configurations.spells[config.drop];
+		
 		super(
 			cell_size,
 			sprites.make(
@@ -29,11 +40,26 @@ class Enemy extends Actor
 
 		movement.deceleration_x = 4000;
 		movement.deceleration_x = 4000;
+
+		stop_moving_countdown = new Countdown(1.25, countdown ->
+		{
+			this.movement.acceleration_x = 0;
+			this.movement.acceleration_y = 0;
+		});
+
+		shooting_countdown = new Countdown(2.25, countdown ->
+		{
+			if (target_angle != null)
+			{
+				this.cast_spell();
+			}
+		});
 	}
 
 	override function update(elapsed_seconds: Float, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
 	{
 		super.update(elapsed_seconds, has_wall_tile_at);
+
 		if (health <= 0)
 		{
 			sprite.tile_index = Configurations.spells[config.drop].tile_index;
@@ -42,22 +68,38 @@ class Enemy extends Actor
 		{
 			if (is_moving())
 			{
-				attention_timer -= elapsed_seconds;
-				if (attention_timer <= 0)
-				{
-					movement.acceleration_x = 0;
-					movement.acceleration_y = 0;
-					attention_timer = attention_duration;
-				}
+				stop_moving_countdown.update(elapsed_seconds);
 			}
+			shooting_countdown.update(elapsed_seconds);
 		}
 	}
 
-	public function move_towards_angle(angle: Float)
+	function target(angle: Float)
+	{
+		this.target_angle = angle;
+		move_towards_angle(angle);
+	}
+
+	function move_towards_angle(angle: Float)
 	{
 		// trace(sprite.angle);
 		movement.acceleration_x = Math.cos(angle) * speed;
 		movement.acceleration_y = Math.sin(angle) * speed;
+	}
+
+	function cast_spell()
+	{
+		var projectile = cache.get();
+		if (projectile != null)
+		{
+			projectile.reset(
+				movement.position_x,
+				movement.position_y,
+				1,
+				spell_config
+			);
+			projectile.move_towards_angle(target_angle);
+		}
 	}
 }
 

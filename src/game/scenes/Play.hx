@@ -1,17 +1,18 @@
 package game.scenes;
 
-import lib.ldtk.TileMapping;
-import lib.peote.Camera;
-import lib.peote.Elements;
-import lib.pure.Bresenham;
-import lib.pure.Calculate;
-import lime.ui.MouseButton;
-import lime.utils.Assets;
-import peote.view.Color;
 import game.Configurations;
 import game.Core;
 import game.LdtkData;
 import game.actor.*;
+import lib.ldtk.TileMapping;
+import lib.peote.Camera;
+import lib.peote.Elements;
+import lib.pure.Bresenham;
+import lib.pure.Cache;
+import lib.pure.Calculate;
+import lime.ui.MouseButton;
+import lime.utils.Assets;
+import peote.view.Color;
 
 using lib.peote.TextureTools;
 
@@ -25,6 +26,8 @@ class Play extends GameScene
 	var level: LdtkData_Level;
 	var camera: Camera;
 	var particles: BlanksParticles;
+	var projectile_sprites: Sprites;
+	var monster_projectiles: Cache<Projectile>;
 
 	public function new(core: Core)
 	{
@@ -78,11 +81,26 @@ class Play extends GameScene
 			sprite_size
 		);
 
+		projectile_sprites = new Sprites(
+			core.screen.display,
+			sprite_texture,
+			"projectiles",
+			sprite_size,
+			sprite_size
+		);
+
+		monster_projectiles = {
+			cached_items: [],
+			create: () -> new Projectile(sprite_size, projectile_sprites.make(0, 0, 512)),
+			cache: projectile -> projectile.hide(),
+			item_limit: 250,
+		};
+
 		var levels = new LdtkData();
 
-		var level_index = 1; // test level
 		var level_index = 0;
-		var debug_level_collisions = false;
+		var level_index = 1; // test level
+		var debug_level_collisions = true;
 
 		level = levels.all_worlds.Default.levels[level_index];
 		if (debug_level_collisions)
@@ -119,7 +137,8 @@ class Play extends GameScene
 					entity.cy * sprite_size,
 					sprite_size,
 					sprites,
-					Configurations.monsters[entity.f_Monster]
+					Configurations.monsters[entity.f_Monster],
+					monster_projectiles
 				)
 		];
 
@@ -216,6 +235,33 @@ class Play extends GameScene
 			(grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
 		);
 
+		for (projectile in monster_projectiles.cached_items)
+		{
+			if (!projectile.is_waiting)
+			{
+				projectile.item.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
+
+				var distance_to_hero = distance_to_point(
+					projectile.item.movement.position_x,
+					projectile.item.movement.position_y,
+					hero.movement.position_x,
+					hero.movement.position_y
+				);
+
+				if (distance_to_hero < 8)
+				{
+					trace('hit!');
+					projectile.item.is_expired = true;
+					hero.damage(1);
+					particles.emit(hero.movement.position_x, hero.movement.position_y);
+				}
+				if (projectile.item.is_expired)
+				{
+					trace('put back in cache');
+					monster_projectiles.put(projectile.item);
+				}
+			}
+		}
 		var monster_index = enemies.length;
 		while (monster_index-- > 0)
 		{
@@ -246,7 +292,7 @@ class Play extends GameScene
 							// monster.sprite.tint.a = 0x40;
 							var angle = Math.atan2(hero.movement.position_y - monster.movement.position_y,
 								hero.movement.position_x - monster.movement.position_x);
-							monster.move_towards_angle(angle);
+							monster.target(angle);
 						}
 					}
 				}
@@ -284,10 +330,19 @@ class Play extends GameScene
 	override function draw()
 	{
 		hero.draw();
+
 		for (enemy in enemies)
 		{
 			enemy.draw();
 		}
+
+		for (projectile in monster_projectiles.cached_items)
+		{
+			projectile.item.sprite.tint.a = Std.int(projectile.item.alpha * 0xff);
+			projectile.item.draw();
+		}
+
+		projectile_sprites.update_all();
 		sprites.update_all();
 		camera.draw();
 	}

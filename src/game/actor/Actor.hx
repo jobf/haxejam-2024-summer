@@ -81,7 +81,7 @@ class Actor
 			{
 				movement.position_y = (movement.row) * movement.cell_size;
 			}
-			trace(movement.cell_ratio_y);
+			// trace(movement.cell_ratio_y);
 			// sprite.tint.a = 0x50;
 			movement.velocity_y = 0;
 			movement.acceleration_y = 0;
