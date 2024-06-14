@@ -1,7 +1,10 @@
 package lib.pure;
 
+import peote.view.Color; // breaking the rules!
 import lib.pure.Cache;
 import lib.pure.Calculate.lerp;
+import lib.pure.Random;
+import lib.pure.Rectangle;
 import lib.pure.Rectangle;
 
 using lib.pure.EulerMotion;
@@ -79,6 +82,8 @@ class ParticleConfig<T>
 
 	var change_angle: (item: T, angle: Float) -> Void;
 
+	var change_tint: (item: T, tint: Int) -> Void;
+
 	var change_alpha: (item: T, a: Int) -> Void;
 
 	var change_xy: (item: T, x: Float, y: Float) -> Void;
@@ -104,6 +109,7 @@ class Particle<T>
 			draw: blueprint.draw,
 			change_angle: blueprint.change_angle,
 			change_alpha: blueprint.change_alpha,
+			change_tint: blueprint.change_tint,
 			change_xy: blueprint.change_xy
 		};
 
@@ -124,7 +130,7 @@ class Particle<T>
 		movement.deceleration_y = 0;
 		movement.acceleration_x = ((Math.random() * blueprint.velocity_x - (blueprint.velocity_x / 2)));
 		movement.acceleration_y = ((Math.random() * blueprint.velocity_y - (blueprint.velocity_y / 2)));
-		particle.lifetime = Std.int(Math.random() * blueprint.lifetime);
+		particle.lifetime = Math.random() * blueprint.lifetime;
 
 		// movement.deceleration_x = 1500;
 		// movement.deceleration_y = 1500;
@@ -134,6 +140,10 @@ class Particle<T>
 		movement.velocity_max_y = 99999; // blueprint.velocity_x;
 		movement.teleport(x, y);
 		particle.change_alpha(graphic, 0xff);
+		var color: Color = 0xffffffFF;
+		color.g = Std.int(0xff * float_between(0.01, 0.7));
+		color.b = color.g;
+		particle.change_tint(graphic, color);
 	}
 
 	function update(elapsed_seconds: Float)

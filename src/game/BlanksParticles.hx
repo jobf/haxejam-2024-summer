@@ -14,9 +14,9 @@ class BlanksParticles extends Particles<Blank>
 		blanks = new Blanks(core.screen.display);
 
 		var particle_blueprint: ParticleConfig<Blank> = {
-			velocity_x: 2500,
-			velocity_y: 2500,
-			lifetime: 2.2,
+			velocity_x: 8500,
+			velocity_y: 8500,
+			lifetime: 0.3,
 			draw: (item, x, y) ->
 			{
 				item.x = x;
@@ -24,6 +24,7 @@ class BlanksParticles extends Particles<Blank>
 			},
 			change_angle: (item, angle) -> item.angle = angle,
 			change_alpha: (item, a) -> item.tint.a = a,
+			change_tint: (item, tint) -> item.tint = tint,
 			change_xy: (item, x, y) ->
 			{
 				item.x = x;

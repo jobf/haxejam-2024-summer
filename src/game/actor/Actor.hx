@@ -103,6 +103,17 @@ class Actor
 				animation_timer = animation_duration;
 			}
 		}
+
+		if (tint_fade < 1)
+		{
+			tint_fade *= 1.1;
+		}
+		else
+		{
+			tint_fade = 1.0;
+		}
+		sprite.tint.g = Std.int(0xff * tint_fade);
+		sprite.tint.b = sprite.tint.g;
 	}
 
 	public function draw()
@@ -146,8 +157,13 @@ class Actor
 
 	public function dash() {}
 
+	var tint_fade: Float = 1.0;
+
 	public function damage(amount: Float)
 	{
 		health -= amount;
+		sprite.tint.g = 0;
+		sprite.tint.b = 0;
+		tint_fade = 0.01;
 	}
 }

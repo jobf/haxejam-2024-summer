@@ -1,8 +1,8 @@
+import haxe.CallStack;
+import haxe.Log;
 import game.Core;
 import game.Screen;
 import game.scenes.*;
-import haxe.CallStack;
-import haxe.Log;
 import lime.app.Application;
 import lime.ui.KeyCode;
 import peote.ui.PeoteUIDisplay;
@@ -58,7 +58,7 @@ class Main extends Application
 			res_height,
 			core -> new Play(core)
 				// core -> new TestSpellInventory(core),
-				// core -> new TestParticles(core),
+				// core -> new TestParticles(core)
 				// core -> new TestLevel(core),
 				// core -> new TestCombat(core),
 				// core -> new TestEnemy(core),
