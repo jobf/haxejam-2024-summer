@@ -57,6 +57,8 @@ class Actor
 		var is_collision_h = has_wall_tile_at(next_column + direction_h, movement.row);
 		var is_collision_v = has_wall_tile_at(movement.column, next_row + direction_v);
 
+		facing = movement.velocity_x < 0 ? -1 : 1;
+
 		if (is_collision_h)
 		{
 			if (direction_x > 0)
@@ -113,10 +115,10 @@ class Actor
 	public function move_in_direction_x(direction: Int)
 	{
 		// sprite.tint.a = 0xff;
-		if (direction != 0)
-		{
-			facing = direction;
-		}
+		// if (direction != 0)
+		// {
+		// 	facing = direction;
+		// }
 		direction_x = direction;
 		direction_y = 0;
 		movement.acceleration_x = direction * speed;
