@@ -1,8 +1,8 @@
-import haxe.CallStack;
-import haxe.Log;
 import game.Core;
 import game.Screen;
 import game.scenes.*;
+import haxe.CallStack;
+import haxe.Log;
 import lime.app.Application;
 import lime.ui.KeyCode;
 import peote.ui.PeoteUIDisplay;
@@ -56,13 +56,13 @@ class Main extends Application
 			window,
 			res_width,
 			res_height,
-			core -> new Play(core),
-			// core -> new TestSpellInventory(core),
-			// core -> new TestParticles(core),
-			// core -> new TestLevel(core),
-			// core -> new TestCombat(core),
-			// core -> new TestEnemy(core),
-			// core -> new TestHeroControls(core)
+			core -> new Play(core)
+				// core -> new TestSpellInventory(core),
+				// core -> new TestParticles(core),
+				// core -> new TestLevel(core),
+				// core -> new TestCombat(core),
+				// core -> new TestEnemy(core),
+				// core -> new TestHeroControls(core)
 		);
 
 		is_ready = true;

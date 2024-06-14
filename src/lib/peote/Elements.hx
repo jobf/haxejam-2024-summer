@@ -549,8 +549,9 @@ class Fills
 	function make(x: Float, y: Float, tile_index: Int, width: Null<Int> = null, height: Null<Int> = null, is_center_pivot: Bool = true,
 			tint: Int = 0xFFFFFFFF): Fill
 	{
-		var w = width ?? tile_size_px;
-		var h = height ?? tile_size_px;
+		
+		var w = width == null ?  tile_size_px : width; 
+		var h = height == null ? tile_size_px : height;
 		var element = Fill.make(x, y, w, h, tile_index, tile_size_px, tint);
 
 		buffer.addElement(element);
