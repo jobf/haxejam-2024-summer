@@ -85,8 +85,8 @@ class Play extends GameScene
 			core.screen.display,
 			sprite_texture,
 			"projectiles",
-			sprite_size,
-			sprite_size
+			tile_size * 2,
+			tile_size * 2
 		);
 
 		monster_projectiles = {
@@ -148,7 +148,7 @@ class Play extends GameScene
 
 		for (entity in level.l_Entities.all_Pickups) {}
 
-		hero = new Magician(core, start_x, start_y, sprite_size, sprites);
+		hero = new Magician(core, start_x, start_y, sprite_size, sprites, projectile_sprites);
 
 		enemies = [
 			for (entity in level.l_Entities.all_Monsters)
@@ -211,10 +211,18 @@ class Play extends GameScene
 
 		core.window.onMouseDown.add((x, y, button) -> if (button == MouseButton.LEFT)
 		{
-			x = (x - core.screen.display.xOffset) / core.screen.peote_view.zoom;
-			y = (y - core.screen.display.yOffset) / core.screen.peote_view.zoom;
+			// x = (x - core.screen.display.xOffset) / core.screen.peote_view.zoom;
+			// y = (y - core.screen.display.yOffset) / core.screen.peote_view.zoom;
 			// particles.emit(x, y);
-			hero.cast_spell(x > hero.movement.position_x ? 1 : -1);
+			hero.is_shooting = true;
+		});
+
+		core.window.onMouseUp.add((x, y, button) -> if (button == MouseButton.LEFT)
+		{
+			// x = (x - core.screen.display.xOffset) / core.screen.peote_view.zoom;
+			// y = (y - core.screen.display.yOffset) / core.screen.peote_view.zoom;
+			// particles.emit(x, y);
+			hero.is_shooting = false;
 		});
 
 		core.window.onMouseMove.add((x, y) ->

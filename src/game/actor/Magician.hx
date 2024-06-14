@@ -3,7 +3,7 @@ package game.actor;
 import lib.peote.Elements;
 import lib.pure.Cache;
 import lib.pure.Calculate;
-// import game.Configurations;
+import lib.pure.Countdown;
 import game.Inventory;
 
 class Magician extends Actor
@@ -12,12 +12,14 @@ class Magician extends Actor
 	var scroll: Sprite;
 	var mouse_angle: Float;
 	var inventory: Inventory;
+	var spell_countdown: Countdown;
+	var is_shooting: Bool = false;
 
-	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites)
+	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites, projectile_sprites: Sprites)
 	{
 		cache = {
 			cached_items: [],
-			create: () -> new Projectile(cell_size, sprites.make(0, 0, 512)),
+			create: () -> new Projectile(cell_size, projectile_sprites.make(0, 0, 512)),
 			cache: projectile -> projectile.hide(),
 			item_limit: 15,
 		};
@@ -41,12 +43,22 @@ class Magician extends Actor
 		inventory.make_available(STARMISSILE);
 		inventory.activate(STARMISSILE);
 		inventory.toggle_visibility();
+
+		spell_countdown = new Countdown(inventory.spell_config.cool_down, countdown ->
+		{
+			if (is_shooting)
+			{
+				cast_spell(facing);
+			}
+
+			countdown.duration = this.inventory.spell_config.cool_down;
+		});
 	}
 
 	function update_(elapsed_seconds: Float, monsters: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
 	{
 		super.update(elapsed_seconds, has_wall_tile_at);
-
+		spell_countdown.update(elapsed_seconds);
 		for (projectile in cache.cached_items)
 		{
 			if (!projectile.is_waiting)

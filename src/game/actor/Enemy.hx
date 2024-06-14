@@ -14,12 +14,14 @@ class Enemy extends Actor
 	var config: EnemyConfig;
 	var stop_moving_countdown: Countdown;
 	var shooting_countdown: Countdown;
+	var spell_countdown:Countdown;
 
 	var cache: Cache<Projectile>;
 
 	var target_angle: Null<Float> = null;
 	var spell_config: SpellConfig;
 	var hero: Magician;
+	var is_shooting: Bool = false;
 
 	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician)
 	{
@@ -38,24 +40,33 @@ class Enemy extends Actor
 			config.animation_tile_indexes
 		);
 
-		speed = 130;
-		movement.velocity_max_x = 100;
-		movement.velocity_max_y = 100;
+		health = config.health;
+		speed = config.speed;
+		movement.velocity_max_x = config.velocity_max;
+		movement.velocity_max_y = config.velocity_max;
 
-		movement.deceleration_x = 4000;
-		movement.deceleration_x = 4000;
+		movement.deceleration_x = config.deceleration;
+		movement.deceleration_y = config.deceleration;
 
-		stop_moving_countdown = new Countdown(1.25, countdown ->
+		stop_moving_countdown = new Countdown(config.movement_duration, countdown ->
 		{
 			this.movement.acceleration_x = 0;
 			this.movement.acceleration_y = 0;
 		});
 
-		shooting_countdown = new Countdown(2.25, countdown ->
+		shooting_countdown = new Countdown(config.shooting_duration, countdown ->
 		{
-			if (target_angle != null)
+			if (is_shooting)
 			{
-				this.cast_spell();
+				is_shooting = false;
+			}
+		});
+
+		spell_countdown = new Countdown(spell_config.cool_down, countdown ->
+		{
+			if (is_shooting)
+			{
+				cast_spell();
 			}
 		});
 	}
@@ -75,12 +86,12 @@ class Enemy extends Actor
 				stop_moving_countdown.update(elapsed_seconds);
 			}
 			shooting_countdown.update(elapsed_seconds);
+			spell_countdown.update(elapsed_seconds);
 
 			var x_grid_distance = Math.abs(hero.movement.column - movement.column);
 			var y_grid_distance = Math.abs(hero.movement.row - movement.row);
 			// fast distance check - is distance close enough to be seen?
-			final sight_grid_limit = 3;
-			var do_line_of_sight_check = x_grid_distance <= sight_grid_limit && y_grid_distance <= sight_grid_limit;
+			var do_line_of_sight_check = x_grid_distance <= config.sight_grid_limit && y_grid_distance <= config.sight_grid_limit;
 			if (do_line_of_sight_check)
 			{
 				var is_hero_in_sight = !is_line_blocked(
@@ -88,8 +99,7 @@ class Enemy extends Actor
 					hero.movement.row,
 					movement.column,
 					movement.row,
-					has_wall_tile_at
-					// (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
+					has_wall_tile_at // (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
 				);
 				// monster.sprite.tint.a = 0xff;
 				if (is_hero_in_sight)
@@ -97,6 +107,7 @@ class Enemy extends Actor
 					// monster.sprite.tint.a = 0x40;
 					target_angle = Math.atan2(hero.movement.position_y - movement.position_y, hero.movement.position_x - movement.position_x);
 					move_towards_angle(target_angle);
+					is_shooting = true;
 				}
 				else
 				{
@@ -157,13 +168,4 @@ class Enemy extends Actor
 			projectile.move_towards_angle(angle);
 		}
 	}
-}
-
-@:publicFields
-@:structInit
-class EnemyConfig
-{
-	var collision_radius: Float;
-	var animation_tile_indexes: Array<Int>;
-	var drop: SpellType;
 }

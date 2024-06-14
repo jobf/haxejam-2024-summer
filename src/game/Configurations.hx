@@ -2,30 +2,73 @@ package game;
 
 import game.Inventory;
 import game.LdtkData;
-import game.actor.Enemy.EnemyConfig;
 
 var monsters: Map<Enum_Monster, EnemyConfig> = [
 	Skeleton => {
 		collision_radius: 16,
 		animation_tile_indexes: [66, 67],
-		drop: BONESPEAR
+		drop: BONESPEAR,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 130,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 20,
+		sight_grid_limit: 3
 	},
 	Zombie => {
 		collision_radius: 16,
 		animation_tile_indexes: [64, 65],
-		drop: PUNCH
+		drop: PUNCH,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 130,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 20,
+		sight_grid_limit: 4
 	},
 	Spider => {
 		collision_radius: 16,
 		animation_tile_indexes: [67, 68], // todo
-		drop: BONESPEAR
+		drop: BONESPEAR,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 130,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 20,
+		sight_grid_limit: 3
 	},
 	Necromancer => {
 		collision_radius: 16,
 		animation_tile_indexes: [67, 68], // todo
-		drop: SKELETON
+		drop: SKELETON,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 130,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 20,
+		sight_grid_limit: 5
 	},
 ];
+
+@:publicFields
+@:structInit
+class EnemyConfig
+{
+	var collision_radius: Float;
+	var animation_tile_indexes: Array<Int>;
+	var drop: SpellType;
+	var velocity_max: Float;
+	var deceleration: Float;
+	var speed: Float;
+	var movement_duration: Float;
+	var shooting_duration: Float;
+	var health:Int;
+	var sight_grid_limit:Int;
+}
 
 enum SpellType
 {
@@ -59,7 +102,7 @@ var spells: Map<SpellType, SpellConfig> = [
 		hit_box: 16,
 		cool_down: 2.0,
 		duration: 12.0,
-		speed: 100,
+		speed: 1000,
 		key: FIREBALL,
 	},
 	PUNCH => {
@@ -79,7 +122,7 @@ var spells: Map<SpellType, SpellConfig> = [
 		hit_box: 4,
 		cool_down: 1.0,
 		duration: 6.0,
-		speed: 500,
+		speed: 1000,
 		key: BONESPEAR,
 	},
 	BOLT => {
