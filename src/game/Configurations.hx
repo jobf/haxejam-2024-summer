@@ -255,7 +255,7 @@ var spells: Map<SpellType, SpellConfig> = [
 		name: "Star missile",
 		tile_index: 8,
 		damage: 10,
-		hit_box: 2,
+		hit_box: 20,
 		cool_down: 0.5,
 		duration: 5.0,
 		speed: 300,

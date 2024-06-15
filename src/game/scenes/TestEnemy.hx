@@ -71,10 +71,6 @@ class TestEnemy extends GameScene
 			cell_size,
 			cell_size
 		);
-
-		particles = new BlanksParticles(core);
-		particles.limits.width = core.screen.res_width;
-		particles.limits.height = core.screen.res_height;
 		monster_sprites = new MonsterSprites(core, scale);
 
 		var sprite_asset = Assets.getImage("assets/sprites-16.png");
@@ -86,13 +82,18 @@ class TestEnemy extends GameScene
 			tile_size * 2,
 			tile_size * 2
 		);
+
+
+		particles = new BlanksParticles(core);
+		particles.limits.width = core.screen.res_width;
+		particles.limits.height = core.screen.res_height;
 		blanks = new Blanks(core.screen.display);
 		monster_projectiles = {
 			cached_items: [],
 			create: () -> new Projectile(
 				cell_size,
 				projectile_sprites.make(0, 0, 512),
-				blanks.make(0, 0, 16, Colors.HITBOX),
+				blanks.make(0, 0, 16, false, Colors.HITBOX),
 				level
 			),
 			cache: projectile -> projectile.hide(),
@@ -105,7 +106,7 @@ class TestEnemy extends GameScene
 			50,
 			cell_size,
 			monster_sprites.get_sprites(_16),
-			blanks.make(0, 0, 16, Colors.HITBOX),
+			blanks,
 			projectile_sprites,
 			level
 		);
@@ -126,7 +127,7 @@ class TestEnemy extends GameScene
 				y,
 				cell_size,
 				monster_sprites.get_sprites(config.tile_size),
-				blanks.make(0, 0, 16, Colors.HITBOX),
+				blanks.make(0, 0, 16, false, Colors.HITBOX),
 				config,
 				monster_projectiles,
 				hero,

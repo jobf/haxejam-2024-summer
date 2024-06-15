@@ -14,7 +14,7 @@ class Colors
 	static var CERULEAN = 0x2929ffff;
 	static var NAVY = 0x2d006eff;
 	static var MAGENTA = 0xff08ffff;
-	static var HITBOX = 0xff08ffAA;
+	static var HITBOX = 0xff08ff6A;
 	static var PURPLE = 0x6e0085ff;
 	static var DARK = 0x260a34ff;
 	static var BLACK = 0x000000ff;

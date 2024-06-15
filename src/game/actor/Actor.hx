@@ -92,8 +92,8 @@ class Actor
 		}
 		rect.x = movement.position_x;
 		rect.y = movement.position_y;
-		hit_box.x = rect.x;
-		hit_box.y = rect.y;
+		hit_box.x = rect.x - (hit_box.width / 2);
+		hit_box.y = rect.y - (hit_box.height / 2);
 
 		var next_x = movement.next_x(elapsed_seconds);
 		var next_column = movement.to_cell(next_x);

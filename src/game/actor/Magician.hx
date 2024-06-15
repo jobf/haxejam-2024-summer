@@ -16,14 +16,14 @@ class Magician extends Actor
 	var spell_countdown: Countdown;
 	var is_shooting: Bool = false;
 
-	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites, debug_hit_box: Blank, projectile_sprites: Sprites, level: Level)
+	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites, blanks: Blanks, projectile_sprites: Sprites, level: Level)
 	{
 		cache = {
 			cached_items: [],
 			create: () -> new Projectile(
 				cell_size,
 				projectile_sprites.make(0, 0, 512),
-				debug_hit_box,
+				blanks.make(0,0,8,false,Colors.HITBOX),
 				level
 			),
 			cache: projectile -> projectile.hide(),
@@ -40,7 +40,7 @@ class Magician extends Actor
 
 				animation_tile_indexes[0]
 			),
-			debug_hit_box,
+			blanks.make(0,0,8,false,Colors.HITBOX),
 			animation_tile_indexes,
 			level
 		);
@@ -100,8 +100,17 @@ class Magician extends Actor
 					// 	var t = 0;
 					// 	t += 1;
 					// }
-					projectile.item.hit_box.overlap_with(projectile.item.overlap, monster.hit_box);
 
+					// if(monster.hit_box.is_inside(projectile.item.movement.position_x, projectile.item.movement.position_y)){
+					// 	var distance_to_monster = distance_to_point(
+					// 		projectile.item.movement.position_x,
+					// 		projectile.item.movement.position_y,
+					// 		monster.movement.position_x,
+					// 		monster.movement.position_y
+					// 	);
+					// 	if()
+					// }
+					projectile.item.hit_box.overlap_with(projectile.item.overlap, monster.hit_box);
 					if (projectile.item.overlap.width != 0 || projectile.item.overlap.height != 0)
 					{
 						trace('hit!');
