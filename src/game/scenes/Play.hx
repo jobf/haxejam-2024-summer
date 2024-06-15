@@ -16,6 +16,7 @@ import game.LdtkData;
 import game.Level;
 import game.MonsterSprites;
 import game.actor.*;
+import game.actor.Enemy.Summon;
 
 using lib.peote.TextureTools;
 
@@ -23,14 +24,15 @@ class Play extends GameScene
 {
 	var blanks: Blanks;
 	var tiles_level: Tiles;
-	var monsters: MonsterSprites;
+	var monster_sprites: MonsterSprites;
 	var hero: Magician;
-	var enemies: Array<Enemy>;
+	var monsters: Array<Enemy>;
 	var level: Level;
 	var camera: Camera;
 	var particles: BlanksParticles;
 	var projectile_sprites: Sprites;
 	var monster_projectiles: Cache<Projectile>;
+	var summon: Summon;
 
 	public function new(core: Core)
 	{
@@ -71,10 +73,29 @@ class Play extends GameScene
 			cell_size,
 			cell_size
 		);
-
+		summon = (key, x, y) ->
+		{
+			var config = Configurations.monsters[key];
+			var monster = new Enemy(
+				x,
+				y,
+				cell_size,
+				monster_sprites.get_sprites(config.tile_size),
+				blanks.make(0, 0, 16, false, Colors.HITBOX),
+				config,
+				monster_projectiles,
+				hero,
+				level,
+				this.summon,
+				monsters
+			);
+			monster.can_move = false;
+			monsters.push(monster);
+			return monster;
+		}
 		blanks = new Blanks(core.screen.display_level_tiles);
 
-		monsters = new MonsterSprites(core, scale);
+		monster_sprites = new MonsterSprites(core, scale);
 
 		var sprite_asset = Assets.getImage("assets/sprites-16.png");
 		var sprite_texture = sprite_asset.tilesheet_from_image(tile_size, tile_size);
@@ -91,6 +112,7 @@ class Play extends GameScene
 			create: () -> new Projectile(
 				cell_size,
 				projectile_sprites.make(0, 0, 512),
+				blanks.make(0, 0, 16, false, Colors.HITBOX),
 				level
 			),
 			cache: projectile -> projectile.hide(),
@@ -153,12 +175,14 @@ class Play extends GameScene
 			start_x,
 			start_y,
 			cell_size,
-			monsters.get_sprites(_16),
+			monster_sprites.get_sprites(_16),
+			blanks,
 			projectile_sprites,
-			level
+			level,
+			summon
 		);
 
-		enemies = [
+		monsters = [
 			for (entity in level.data.l_Entities.all_Monsters)
 			{
 				var config = Configurations.monsters[entity.f_Monster];
@@ -167,11 +191,14 @@ class Play extends GameScene
 					entity.cx * cell_size,
 					entity.cy * cell_size,
 					cell_size,
-					monsters.get_sprites(config.tile_size),
+					monster_sprites.get_sprites(config.tile_size),
+					blanks.make(0, 0, 16, false, Colors.HITBOX),
 					config,
 					monster_projectiles,
 					hero,
-					level
+					level,
+					summon,
+					monsters
 				);
 			}
 		];
@@ -247,15 +274,11 @@ class Play extends GameScene
 
 	override function update(elapsed_seconds: Float)
 	{
-		hero.update_(
-			elapsed_seconds,
-			enemies,
-			(x, y) ->
-			{
-				trace('$x, $y');
-				particles.emit(x, y);
-			}
-		);
+		hero.update_(elapsed_seconds, monsters, (x, y) ->
+		{
+			trace('$x, $y');
+			particles.emit(x, y);
+		});
 
 		for (projectile in monster_projectiles.cached_items)
 		{
@@ -284,10 +307,10 @@ class Play extends GameScene
 				}
 			}
 		}
-		var monster_index = enemies.length;
+		var monster_index = monsters.length;
 		while (monster_index-- > 0)
 		{
-			var monster = enemies[monster_index];
+			var monster = monsters[monster_index];
 
 			if (!monster.is_expired)
 			{
@@ -310,7 +333,7 @@ class Play extends GameScene
 	{
 		hero.draw();
 
-		for (enemy in enemies)
+		for (enemy in monsters)
 		{
 			enemy.draw();
 		}
@@ -320,15 +343,16 @@ class Play extends GameScene
 			projectile.item.sprite.tint.a = Std.int(projectile.item.alpha * 0xff);
 			projectile.item.draw();
 		}
+		blanks.update_all();
 		projectile_sprites.update_all();
-		monsters.draw();
+		monster_sprites.draw();
 		camera.draw();
 	}
 
 	override function clean_up()
 	{
 		projectile_sprites.clear();
-		monsters.clear();
+		monster_sprites.clear();
 		tiles_level.clear();
 		blanks.clear();
 	}

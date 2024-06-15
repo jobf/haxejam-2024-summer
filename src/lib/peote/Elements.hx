@@ -90,9 +90,9 @@ class Blanks
 		return element;
 	}
 
-	function rect(x: Float, y: Float, width: Float, height: Float, tint: Int): Blank
+	function rect(x: Float, y: Float, width: Float, height: Float, tint: Int, is_centered:Bool = false): Blank
 	{
-		var element = new Blank(Std.int(x), Std.int(y), Std.int(width), Std.int(height), tint, false);
+		var element = new Blank(Std.int(x), Std.int(y), Std.int(width), Std.int(height), tint, is_centered);
 		buffer.addElement(element);
 		return element;
 	}

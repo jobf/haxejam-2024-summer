@@ -7,6 +7,9 @@ import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
 import game.Configurations;
+import game.LdtkData;
+
+typedef Summon = (key: Enum_Monster, x: Float, y: Float) -> Enemy;
 
 @:publicFields
 class Enemy extends Actor
@@ -22,14 +25,19 @@ class Enemy extends Actor
 	var spell_config: SpellConfig;
 	var hero: Magician;
 	var is_shooting: Bool = false;
+	var summon: Summon;
+	var is_summoned_by_hero: Bool = false;
+	var enemies: Array<Enemy>;
 
-	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, debug_hit_box:Blank, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician, level:Level)
+	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, debug_hit_box: Blank, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician,
+			level: Level, summon: Summon, enemies: Array<Enemy>)
 	{
 		this.cache = cache;
 		this.hero = hero;
 		this.config = config;
 		this.spell_config = Configurations.spells[config.spell];
-		
+		this.summon = summon;
+		this.enemies = enemies;
 		super(
 			cell_size,
 			sprites.make(
@@ -93,48 +101,91 @@ class Enemy extends Actor
 			shooting_countdown.update(elapsed_seconds);
 			spell_countdown.update(elapsed_seconds);
 
-			var x_grid_distance = Math.abs(hero.movement.column - movement.column);
-			var y_grid_distance = Math.abs(hero.movement.row - movement.row);
-			// fast distance check - is distance close enough to be seen?
-			var do_line_of_sight_check = x_grid_distance <= config.sight_grid_limit && y_grid_distance <= config.sight_grid_limit;
-			if (do_line_of_sight_check)
+			if (is_summoned_by_hero)
 			{
-				var is_hero_in_sight = !is_line_blocked(
-					hero.movement.column,
-					hero.movement.row,
-					movement.column,
-					movement.row,
-					level.is_wall_cell // (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
-				);
-				// monster.sprite.tint.a = 0xff;
-				if (is_hero_in_sight)
+				for (monster in enemies)
 				{
-					// monster.sprite.tint.a = 0x40;
-					target_angle = Math.atan2(hero.movement.position_y - movement.position_y, hero.movement.position_x - movement.position_x);
-					move_towards_angle(target_angle);
-					is_shooting = true;
-				}
-				else
-				{
-					target_angle = null;
+					var x_grid_distance = Math.abs(monster.movement.column - movement.column);
+					var y_grid_distance = Math.abs(monster.movement.row - movement.row);
+					// fast distance check - is distance close enough to be seen?
+					var do_line_of_sight_check = x_grid_distance <= config.sight_grid_limit && y_grid_distance <= config.sight_grid_limit;
+					if (do_line_of_sight_check)
+					{
+						var is_monster_in_sight = !is_line_blocked(
+							monster.movement.column,
+							monster.movement.row,
+							movement.column,
+							movement.row,
+							level.is_wall_cell // (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
+						);
+						// monster.sprite.tint.a = 0xff;
+						if (is_monster_in_sight)
+						{
+							// monster.sprite.tint.a = 0x40;
+							target_angle = Math.atan2(monster.movement.position_y - movement.position_y, monster.movement.position_x - movement.position_x);
+							move_towards_angle(target_angle);
+							is_shooting = true;
+						}
+						else
+						{
+							target_angle = null;
+						}
+					}
+					// todo (better distance check for overlap)
+					var is_overlapping_monster = x_grid_distance == 0 && y_grid_distance == 0; // monster.movement.column == monster.movement.column && monster.movement.row == monster.movement.row;
+
+					if (is_overlapping_monster)
+					{
+						monster.damage(Configurations.spells[config.spell].damage); // todo - proper damage
+					}
 				}
 			}
-			// todo (better distance check for overlap)
-			var is_overlapping_hero = x_grid_distance == 0 && y_grid_distance == 0; // hero.movement.column == monster.movement.column && hero.movement.row == monster.movement.row;
-
-			if (is_overlapping_hero)
+			else
 			{
-				if (health <= 0)
+				var x_grid_distance = Math.abs(hero.movement.column - movement.column);
+				var y_grid_distance = Math.abs(hero.movement.row - movement.row);
+				// fast distance check - is distance close enough to be seen?
+				var do_line_of_sight_check = x_grid_distance <= config.sight_grid_limit && y_grid_distance <= config.sight_grid_limit;
+				if (do_line_of_sight_check)
 				{
-					trace('pick up spell!');
-					hero.inventory.make_available(config.spell);
-					is_expired = true;
-					sprite.tint.a = 0;
-					// enemies.remove(monster);
+					var is_hero_in_sight = !is_line_blocked(
+						hero.movement.column,
+						hero.movement.row,
+						movement.column,
+						movement.row,
+						level.is_wall_cell // (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
+					);
+					// monster.sprite.tint.a = 0xff;
+					if (is_hero_in_sight)
+					{
+						// monster.sprite.tint.a = 0x40;
+						target_angle = Math.atan2(hero.movement.position_y - movement.position_y, hero.movement.position_x - movement.position_x);
+						move_towards_angle(target_angle);
+						is_shooting = true;
+					}
+					else
+					{
+						target_angle = null;
+					}
 				}
-				else
+
+				// todo (better distance check for overlap)
+				var is_overlapping_hero = x_grid_distance == 0 && y_grid_distance == 0; // hero.movement.column == monster.movement.column && hero.movement.row == monster.movement.row;
+
+				if (is_overlapping_hero)
 				{
-					hero.damage(1); // todo - proper damage
+					if (health <= 0)
+					{
+						trace('pick up spell!');
+						hero.inventory.make_available(config.spell);
+						is_expired = true;
+						sprite.tint.a = 0;
+						// enemies.remove(monster);
+					}
+					else
+					{
+						hero.damage(Configurations.spells[config.spell].damage); // todo - proper damage
+					}
 				}
 			}
 		}
@@ -155,22 +206,39 @@ class Enemy extends Actor
 
 	function cast_spell()
 	{
-		var projectile = cache.get();
-		if (projectile != null)
+		if (spell_config.key == SKELETON) // || spell_config.key == DRAGON)
 		{
-			projectile.reset(
-				movement.position_x,
-				movement.position_y,
-				1,
-				spell_config
-			);
 			var angle = radians_between(
 				hero.movement.position_x,
 				hero.movement.position_y,
 				movement.position_x,
 				movement.position_y
 			);
-			projectile.move_towards_angle(angle);
+			var x = movement.position_x + Math.sin(angle) * 100;
+			var y = movement.position_y + Math.cos(angle) * 100;
+
+			summon(Skeleton, x, y);
+			trace('summon skeleton $x $y');
+		}
+		else
+		{
+			var projectile = cache.get();
+			if (projectile != null)
+			{
+				projectile.reset(
+					movement.position_x,
+					movement.position_y,
+					1,
+					spell_config
+				);
+				var angle = radians_between(
+					hero.movement.position_x,
+					hero.movement.position_y,
+					movement.position_x,
+					movement.position_y
+				);
+				projectile.move_towards_angle(angle);
+			}
 		}
 	}
 }

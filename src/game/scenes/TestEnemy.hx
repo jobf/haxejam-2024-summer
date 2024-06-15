@@ -12,6 +12,7 @@ import game.Configurations;
 import game.Core;
 import game.LdtkData;
 import game.actor.*;
+import game.actor.Enemy.Summon;
 
 using lib.peote.TextureTools;
 
@@ -26,6 +27,7 @@ class TestEnemy extends GameScene
 	var projectile_sprites: Sprites;
 	var particles: BlanksParticles;
 	var blanks: Blanks;
+	var summon: Summon;
 
 	public function new(core: Core)
 	{
@@ -83,7 +85,6 @@ class TestEnemy extends GameScene
 			tile_size * 2
 		);
 
-
 		particles = new BlanksParticles(core);
 		particles.limits.width = core.screen.res_width;
 		particles.limits.height = core.screen.res_height;
@@ -100,26 +101,7 @@ class TestEnemy extends GameScene
 			item_limit: 250,
 		};
 
-		hero = new Magician(
-			core,
-			750,
-			50,
-			cell_size,
-			monster_sprites.get_sprites(_16),
-			blanks,
-			projectile_sprites,
-			level
-		);
-		hero.inventory.make_available(FIREBALL);
-		hero.inventory.make_available(PUNCH);
-		hero.inventory.make_available(BONESPEAR);
-		hero.inventory.make_available(BOLT);
-		hero.inventory.make_available(DRAGON);
-		hero.inventory.make_available(INFEST);
-		hero.inventory.make_available(LIGHTNING);
-		hero.inventory.make_available(SKELETON);
-
-		var make_enemy: (key: Enum_Monster, x: Float, y: Float) -> Enemy = (key, x, y) ->
+		summon = (key, x, y) ->
 		{
 			var config = Configurations.monsters[key];
 			var monster = new Enemy(
@@ -131,24 +113,47 @@ class TestEnemy extends GameScene
 				config,
 				monster_projectiles,
 				hero,
-				level
+				level,
+				this.summon,
+				monsters
 			);
 			monster.can_move = false;
+			monsters.push(monster);
 			return monster;
 		}
-		monsters = [
-			make_enemy(Skeleton, 100, 100),
-			make_enemy(Zombie, 175, 100),
-			make_enemy(Necromancer, 250, 100),
-			make_enemy(
-				Dragon_Tamer_Priestess,
-				325,
-				100
-			),
-			make_enemy(Dragon, 170, 350),
-			make_enemy(Dragon_Electro, 450, 350),
-			make_enemy(Dragon_Fire, 730, 350),
-		];
+
+		hero = new Magician(
+			core,
+			750,
+			50,
+			cell_size,
+			monster_sprites.get_sprites(_16),
+			blanks,
+			projectile_sprites,
+			level,
+			summon
+		);
+		hero.inventory.make_available(FIREBALL);
+		hero.inventory.make_available(PUNCH);
+		hero.inventory.make_available(BONESPEAR);
+		hero.inventory.make_available(BOLT);
+		hero.inventory.make_available(DRAGON);
+		hero.inventory.make_available(INFEST);
+		hero.inventory.make_available(LIGHTNING);
+		hero.inventory.make_available(SKELETON);
+
+		monsters = [];
+		summon(Skeleton, 100, 100);
+		summon(Zombie, 175, 100);
+		summon(Necromancer, 250, 100);
+		summon(
+			Dragon_Tamer_Priestess,
+			325,
+			100
+		);
+		summon(Dragon, 170, 350);
+		summon(Dragon_Electro, 450, 350);
+		summon(Dragon_Fire, 730, 350);
 		var level_tile_offset = 0;
 		var debug_color: Color = Colors.YELLOW;
 		debug_color.a = 0x55;
@@ -221,7 +226,7 @@ class TestEnemy extends GameScene
 				{
 					trace('hit!');
 					projectile.item.is_expired = true;
-					// hero.damage(1);
+					hero.damage(1);
 					particles.emit(hero.movement.position_x, hero.movement.position_y);
 				}
 				if (projectile.item.is_expired)

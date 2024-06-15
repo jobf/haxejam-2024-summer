@@ -191,6 +191,7 @@ class Actor
 	{
 		sprite.x = rect.x;
 		sprite.y = rect.y;
+		debug_hit_box.tint.a = 0x00;
 		debug_hit_box.x = hit_box.x;
 		debug_hit_box.y = hit_box.y;
 		debug_hit_box.width = Std.int(hit_box.width);

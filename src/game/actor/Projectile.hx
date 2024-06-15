@@ -48,7 +48,7 @@ class Projectile extends Actor
 		alpha = 1;
 		sprite.tint = spell.color;
 		sprite.tint.a = 0xff;
-		debug_hit_box.tint.a = 0xff;
+		debug_hit_box.tint.a = 0x00;
 		facing = facing_x;
 		sprite.x = x;
 		sprite.y = y;

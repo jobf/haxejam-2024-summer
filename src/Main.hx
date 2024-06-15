@@ -56,12 +56,12 @@ class Main extends Application
 			window,
 			res_width,
 			res_height,
-			// core -> new Play(core)
+			core -> new Play(core)
 				// core -> new TestSpellInventory(core),
 				// core -> new TestParticles(core)
 				// core -> new TestLevel(core),
 				// core -> new TestCombat(core),
-				core -> new TestEnemy(core)
+				// core -> new TestEnemy(core)
 				// core -> new TestHeroControls(core)
 		);
 
