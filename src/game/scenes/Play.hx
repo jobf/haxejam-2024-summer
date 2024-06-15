@@ -6,12 +6,14 @@ import lib.peote.Elements;
 import lib.pure.Bresenham;
 import lib.pure.Cache;
 import lib.pure.Calculate;
+import lib.pure.Rectangle;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
 import peote.view.Color;
 import game.Configurations;
 import game.Core;
 import game.LdtkData;
+import game.Level;
 import game.MonsterSprites;
 import game.actor.*;
 
@@ -24,7 +26,7 @@ class Play extends GameScene
 	var monsters: MonsterSprites;
 	var hero: Magician;
 	var enemies: Array<Enemy>;
-	var level: LdtkData_Level;
+	var level: Level;
 	var camera: Camera;
 	var particles: BlanksParticles;
 	var projectile_sprites: Sprites;
@@ -73,7 +75,7 @@ class Play extends GameScene
 		blanks = new Blanks(core.screen.display_level_tiles);
 
 		monsters = new MonsterSprites(core, scale);
-		
+
 		var sprite_asset = Assets.getImage("assets/sprites-16.png");
 		var sprite_texture = sprite_asset.tilesheet_from_image(tile_size, tile_size);
 		projectile_sprites = new Sprites(
@@ -86,30 +88,34 @@ class Play extends GameScene
 
 		monster_projectiles = {
 			cached_items: [],
-			create: () -> new Projectile(cell_size, projectile_sprites.make(0, 0, 512)),
+			create: () -> new Projectile(
+				cell_size,
+				projectile_sprites.make(0, 0, 512),
+				level
+			),
 			cache: projectile -> projectile.hide(),
 			item_limit: 250,
 		};
 
 		var levels = new LdtkData();
 
-		var level_index = 0;
 		var level_index = 1; // test level
-		var debug_level_collisions = true;
+		var level_index = 0;
+		var debug_level_collisions = false;
 
-		level = levels.all_worlds.Default.levels[level_index];
+		level = new Level(levels.all_worlds.Default.levels[level_index], cell_size);
 		if (debug_level_collisions)
 		{
 			var level_tile_offset = 0;
 			var debug_color: Color = Colors.YELLOW;
 			debug_color.a = 0x55;
-			iterate_grid(level.l_Collision, (value, column, row) ->
+			iterate_grid(level.data.l_Collision, (value, column, row) ->
 			{
 				blanks.make_aligned(column, row, cell_size, cell_size, cell_size, debug_color, level_tile_offset);
 			});
 		}
 
-		iterate_layer(level.l_Tiles, (tile_stack, column, row) ->
+		iterate_layer(level.data.l_Tiles, (tile_stack, column, row) ->
 		{
 			// get the top tile of the stack only
 			var tile = tile_stack[tile_stack.length - 1];
@@ -117,7 +123,7 @@ class Play extends GameScene
 			tiles_level.make_aligned(column, row, cell_size, tile.tileId, is_flipped_x);
 		});
 
-		iterate_layer(level.l_Decoration, (tile_stack, column, row) ->
+		iterate_layer(level.data.l_Decoration, (tile_stack, column, row) ->
 		{
 			// get the top tile of the stack only
 			var tile = tile_stack[tile_stack.length - 1];
@@ -127,7 +133,7 @@ class Play extends GameScene
 
 		var start_x = 150;
 		var start_y = 150;
-		for (entity in level.l_Entities.all_Mechanisms)
+		for (entity in level.data.l_Entities.all_Mechanisms)
 		{
 			switch entity.f_Mechanism
 			{
@@ -140,15 +146,23 @@ class Play extends GameScene
 			}
 		}
 
-		for (entity in level.l_Entities.all_Pickups) {}
+		for (entity in level.data.l_Entities.all_Pickups) {}
 
-		hero = new Magician(core, start_x, start_y, cell_size, monsters.get_sprites(_16), projectile_sprites);
+		hero = new Magician(
+			core,
+			start_x,
+			start_y,
+			cell_size,
+			monsters.get_sprites(_16),
+			projectile_sprites,
+			level
+		);
 
 		enemies = [
-			for (entity in level.l_Entities.all_Monsters)
+			for (entity in level.data.l_Entities.all_Monsters)
 			{
 				var config = Configurations.monsters[entity.f_Monster];
-				
+
 				new Enemy(
 					entity.cx * cell_size,
 					entity.cy * cell_size,
@@ -156,13 +170,14 @@ class Play extends GameScene
 					monsters.get_sprites(config.tile_size),
 					config,
 					monster_projectiles,
-					hero
+					hero,
+					level
 				);
 			}
 		];
 
-		var level_edge_right = level.l_Tiles.pxWid * scale;
-		var level_edge_floor = level.l_Tiles.pxHei * scale;
+		var level_edge_right = level.data.l_Tiles.pxWid * scale;
+		var level_edge_floor = level.data.l_Tiles.pxHei * scale;
 
 		camera = new Camera([core.screen.display_level_tiles, core.screen.display], {
 			view_width: core.screen.res_width,
@@ -239,15 +254,14 @@ class Play extends GameScene
 			{
 				trace('$x, $y');
 				particles.emit(x, y);
-			},
-			(grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
+			}
 		);
 
 		for (projectile in monster_projectiles.cached_items)
 		{
 			if (!projectile.is_waiting)
 			{
-				projectile.item.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
+				projectile.item.update(elapsed_seconds);
 
 				var distance_to_hero = distance_to_point(
 					projectile.item.movement.position_x,
@@ -277,7 +291,7 @@ class Play extends GameScene
 
 			if (!monster.is_expired)
 			{
-				monster.update(elapsed_seconds, (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y));
+				monster.update(elapsed_seconds);
 			}
 		}
 

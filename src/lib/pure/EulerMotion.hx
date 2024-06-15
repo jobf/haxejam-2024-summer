@@ -110,6 +110,26 @@ class MotionComponent
 	{
 		return Std.int(pixel / cell_size);
 	}
+
+	function wasMovingRight()
+	{
+		return position_previous_x < position_x;
+	}
+
+	function wasMovingLeft()
+	{
+		return position_previous_x > position_x;
+	}
+
+	function wasMovingDown()
+	{
+		return position_previous_y < position_y;
+	}
+
+	function wasMovingUp()
+	{
+		return position_previous_y > position_y;
+	}
 }
 
 class MotionComponentLogic

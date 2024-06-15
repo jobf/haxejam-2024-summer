@@ -5,6 +5,7 @@ import lib.pure.Bresenham;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
+import lib.pure.Rectangle;
 import game.Configurations;
 import game.Inventory.SpellConfig;
 
@@ -14,7 +15,7 @@ class Enemy extends Actor
 	var config: EnemyConfig;
 	var stop_moving_countdown: Countdown;
 	var shooting_countdown: Countdown;
-	var spell_countdown:Countdown;
+	var spell_countdown: Countdown;
 
 	var cache: Cache<Projectile>;
 
@@ -23,7 +24,7 @@ class Enemy extends Actor
 	var hero: Magician;
 	var is_shooting: Bool = false;
 
-	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician)
+	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician, level:Level)
 	{
 		this.cache = cache;
 		this.hero = hero;
@@ -37,7 +38,8 @@ class Enemy extends Actor
 				y,
 				config.animation_tile_indexes[0]
 			),
-			config.animation_tile_indexes
+			config.animation_tile_indexes,
+			level
 		);
 
 		health = config.health;
@@ -71,9 +73,9 @@ class Enemy extends Actor
 		});
 	}
 
-	override function update(elapsed_seconds: Float, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
+	override function update(elapsed_seconds: Float)
 	{
-		super.update(elapsed_seconds, has_wall_tile_at);
+		super.update(elapsed_seconds);
 
 		if (health <= 0)
 		{
@@ -99,7 +101,7 @@ class Enemy extends Actor
 					hero.movement.row,
 					movement.column,
 					movement.row,
-					has_wall_tile_at // (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
+					level.is_wall_cell // (grid_x, grid_y) -> level.l_Collision.hasValue(grid_x, grid_y)
 				);
 				// monster.sprite.tint.a = 0xff;
 				if (is_hero_in_sight)

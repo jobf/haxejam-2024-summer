@@ -4,6 +4,7 @@ import lib.peote.Elements;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
+import lib.pure.Rectangle;
 import game.Inventory;
 
 class Magician extends Actor
@@ -15,11 +16,11 @@ class Magician extends Actor
 	var spell_countdown: Countdown;
 	var is_shooting: Bool = false;
 
-	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites, projectile_sprites: Sprites)
+	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites, projectile_sprites: Sprites, level:Level)
 	{
 		cache = {
 			cached_items: [],
-			create: () -> new Projectile(cell_size, projectile_sprites.make(0, 0, 512)),
+			create: () -> new Projectile(cell_size, projectile_sprites.make(0, 0, 512), level),
 			cache: projectile -> projectile.hide(),
 			item_limit: 15,
 		};
@@ -34,7 +35,8 @@ class Magician extends Actor
 
 				animation_tile_indexes[0]
 			),
-			animation_tile_indexes
+			animation_tile_indexes,
+			level
 		);
 
 		var scroll_tile_index = 34;
@@ -55,15 +57,15 @@ class Magician extends Actor
 		});
 	}
 
-	function update_(elapsed_seconds: Float, monsters: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
+	function update_(elapsed_seconds: Float, monsters: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void)
 	{
-		super.update(elapsed_seconds, has_wall_tile_at);
+		super.update(elapsed_seconds);
 		spell_countdown.update(elapsed_seconds);
 		for (projectile in cache.cached_items)
 		{
 			if (!projectile.is_waiting)
 			{
-				projectile.item.update(elapsed_seconds, has_wall_tile_at);
+				projectile.item.update(elapsed_seconds);
 				for (monster in monsters)
 				{
 					if (monster.is_expired)

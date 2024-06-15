@@ -2,21 +2,23 @@ package game.actor;
 
 import lib.peote.Elements;
 import lib.pure.Calculate;
+import lib.pure.Rectangle;
 import game.Inventory;
+import game.Level;
 
 class Projectile extends Actor
 {
 	var life_time: Float = 0;
 	var alpha: Float = 1;
 
-	function new(cell_size: Int, sprite: Sprite)
+	function new(cell_size: Int, sprite: Sprite, level:Level)
 	{
-		super(cell_size, sprite, [sprite.tile_index]);
+		super(cell_size, sprite, [sprite.tile_index], level);
 	}
 
-	override function update(elapsed_seconds: Float, has_wall_tile_at: (grid_x: Int, grid_y: Int) -> Bool)
+	override function update(elapsed_seconds: Float)
 	{
-		super.update(elapsed_seconds, has_wall_tile_at);
+		super.update(elapsed_seconds);
 		if (life_time > 0)
 		{
 			life_time -= elapsed_seconds;

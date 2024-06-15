@@ -12,6 +12,7 @@ class Rectangle
 	var y: Float;
 	var width: Float;
 	var height: Float;
+	
 
 	var left(get, never): Float;
 
@@ -58,5 +59,29 @@ class Rectangle
 	public function is_inside(x: Float, y: Float): Bool
 	{
 		return left <= x && right >= x && top <= y && bottom >= y;
+	}
+
+	public function overlap_with(overlap:Rectangle, that: Rectangle): Void
+	{
+		overlap.x = 0;
+		overlap.y = 0;
+		overlap.width = 0;
+		overlap.height = 0;
+		var left = (this.x > that.x) ? this.x : that.x;
+		var right1 = this.x + this.width;
+		var right2 = that.x + that.width;
+		var right = (right1 < right2) ? right1 : right2;
+		var top = (this.y > that.y) ? this.y : that.y;
+		var bottom1 = this.y + this.height;
+		var bottom2 = that.y + that.height;
+		var bottom = (bottom1 < bottom2) ? bottom1 : bottom2;
+
+		if ((left < right) && (top < bottom))
+		{
+			overlap.x = left;
+			overlap.y = top;
+			overlap.width = right - left;
+			overlap.height = bottom - top;
+		}
 	}
 }
