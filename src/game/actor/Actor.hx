@@ -10,10 +10,12 @@ using lib.pure.EulerMotion;
 @:publicFields
 class Actor
 {
+	public var debug_hit_box(default, null): Blank;
 	public var sprite(default, null): Sprite;
 	public var movement(default, null): MotionComponent;
 
 	var speed: Float = 1800;
+	var can_move: Bool = true;
 
 	public var facing: Int = 1;
 
@@ -26,13 +28,15 @@ class Actor
 	var direction_y: Int = 0;
 	var health: Float = 1;
 	var rect: Rectangle;
+	var hit_box: Rectangle;
 	var overlap: Rectangle;
 	var level: Level;
-	var padding:Int = 2;
+	var padding: Int = 2;
 
-	public function new(cell_size: Int, sprite: Sprite, animation_tile_indexes: Array<Int>, level: Level)
+	public function new(cell_size: Int, sprite: Sprite, debug_hit_box:Blank, animation_tile_indexes: Array<Int>, level: Level)
 	{
 		this.sprite = sprite;
+		this.debug_hit_box = debug_hit_box;
 		this.level = level;
 		this.animation_tile_indexes = animation_tile_indexes;
 
@@ -42,6 +46,14 @@ class Actor
 			width: cell_size - padding,
 			height: cell_size - padding,
 		}
+
+		hit_box = {
+			x: rect.x,
+			y: rect.y,
+			width: rect.width,
+			height: rect.height,
+		}
+
 		overlap = {
 			x: 0,
 			y: 0,
@@ -74,9 +86,14 @@ class Actor
 	// wall_tile_at: (x: Float, y: Float) -> Null<Rectangle>
 	public function update(elapsed_seconds: Float)
 	{
-		movement.compute_motion(elapsed_seconds);
+		if (can_move)
+		{
+			movement.compute_motion(elapsed_seconds);
+		}
 		rect.x = movement.position_x;
 		rect.y = movement.position_y;
+		hit_box.x = rect.x;
+		hit_box.y = rect.y;
 
 		var next_x = movement.next_x(elapsed_seconds);
 		var next_column = movement.to_cell(next_x);
@@ -174,6 +191,10 @@ class Actor
 	{
 		sprite.x = rect.x;
 		sprite.y = rect.y;
+		debug_hit_box.x = hit_box.x;
+		debug_hit_box.y = hit_box.y;
+		debug_hit_box.width = Std.int(hit_box.width);
+		debug_hit_box.height = Std.int(hit_box.height);
 		sprite.facing_x = -facing;
 	}
 

@@ -61,7 +61,7 @@ class TestCombat extends GameScene
 		enemies = [
 			for (pos in positions)
 				new Enemy(pos[0], pos[1], sprites, {
-					collision_radius: 16,
+					hit_box: 16,
 					animation_tile_indexes: [67, 68]
 				})
 		];

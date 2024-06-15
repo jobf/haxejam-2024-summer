@@ -16,11 +16,16 @@ class Magician extends Actor
 	var spell_countdown: Countdown;
 	var is_shooting: Bool = false;
 
-	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites, projectile_sprites: Sprites, level:Level)
+	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites, debug_hit_box: Blank, projectile_sprites: Sprites, level: Level)
 	{
 		cache = {
 			cached_items: [],
-			create: () -> new Projectile(cell_size, projectile_sprites.make(0, 0, 512), level),
+			create: () -> new Projectile(
+				cell_size,
+				projectile_sprites.make(0, 0, 512),
+				debug_hit_box,
+				level
+			),
 			cache: projectile -> projectile.hide(),
 			item_limit: 15,
 		};
@@ -35,10 +40,12 @@ class Magician extends Actor
 
 				animation_tile_indexes[0]
 			),
+			debug_hit_box,
 			animation_tile_indexes,
 			level
 		);
-
+		debug_hit_box.width = Std.int(hit_box.width);
+		debug_hit_box.height = Std.int(hit_box.height);
 		var scroll_tile_index = 34;
 		scroll = sprites.make(x, y, scroll_tile_index);
 		inventory = new Inventory(core);
@@ -55,6 +62,14 @@ class Magician extends Actor
 
 			countdown.duration = this.inventory.spell_config.cool_down;
 		});
+	}
+
+	function toggle_shooting(is_shooting:Bool)
+	{
+		this.is_shooting = is_shooting;
+		if(this.is_shooting){
+			spell_countdown.remaining = -10;
+		}
 	}
 
 	function update_(elapsed_seconds: Float, monsters: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void)
@@ -74,14 +89,20 @@ class Magician extends Actor
 						continue;
 					}
 
-					var distance_to_monster = distance_to_point(
-						projectile.item.movement.position_x,
-						projectile.item.movement.position_y,
-						monster.movement.position_x,
-						monster.movement.position_y
-					);
+					// var distance_to_monster = distance_to_point(
+					// 	projectile.item.movement.position_x,
+					// 	projectile.item.movement.position_y,
+					// 	monster.movement.position_x,
+					// 	monster.movement.position_y
+					// );
 
-					if (distance_to_monster < monster.config.collision_radius)
+					// if(distance_to_monster < 16){
+					// 	var t = 0;
+					// 	t += 1;
+					// }
+					projectile.item.hit_box.overlap_with(projectile.item.overlap, monster.hit_box);
+
+					if (projectile.item.overlap.width != 0 || projectile.item.overlap.height != 0)
 					{
 						trace('hit!');
 						projectile.item.is_expired = true;

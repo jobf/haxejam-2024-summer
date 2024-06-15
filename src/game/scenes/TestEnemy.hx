@@ -1,10 +1,13 @@
 package game.scenes;
 
+import lib.ldtk.TileMapping;
 import lib.peote.Elements;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
+import peote.view.Color;
+import game.Colors;
 import game.Configurations;
 import game.Core;
 import game.LdtkData;
@@ -14,6 +17,7 @@ using lib.peote.TextureTools;
 
 class TestEnemy extends GameScene
 {
+	var level: Level;
 	var sprites: Sprites;
 	var hero: Magician;
 	var monster_sprites: MonsterSprites;
@@ -21,6 +25,7 @@ class TestEnemy extends GameScene
 	var monster_projectiles: Cache<Projectile>;
 	var projectile_sprites: Sprites;
 	var particles: BlanksParticles;
+	var blanks: Blanks;
 
 	public function new(core: Core)
 	{
@@ -48,11 +53,17 @@ class TestEnemy extends GameScene
 	override function begin()
 	{
 		super.begin();
+
 		var template_asset = Assets.getImage("assets/sprites-16.png");
 		var tile_size = 16;
 		var sprite_texture = template_asset.tilesheet_from_image(tile_size, tile_size);
 		var scale = 4;
 		var cell_size = tile_size * scale;
+
+		var levels = new LdtkData();
+		var level_index = 3; // empty level
+		level = new Level(levels.all_worlds.Default.levels[level_index], cell_size);
+
 		sprites = new Sprites(
 			core.screen.display,
 			sprite_texture,
@@ -75,9 +86,15 @@ class TestEnemy extends GameScene
 			tile_size * 2,
 			tile_size * 2
 		);
+		blanks = new Blanks(core.screen.display);
 		monster_projectiles = {
 			cached_items: [],
-			create: () -> new Projectile(cell_size, projectile_sprites.make(0, 0, 512)),
+			create: () -> new Projectile(
+				cell_size,
+				projectile_sprites.make(0, 0, 512),
+				blanks.make(0, 0, 16, Colors.HITBOX),
+				level
+			),
 			cache: projectile -> projectile.hide(),
 			item_limit: 250,
 		};
@@ -85,33 +102,59 @@ class TestEnemy extends GameScene
 		hero = new Magician(
 			core,
 			750,
-			420,
+			50,
 			cell_size,
 			monster_sprites.get_sprites(_16),
-			projectile_sprites
+			blanks.make(0, 0, 16, Colors.HITBOX),
+			projectile_sprites,
+			level
 		);
+		hero.inventory.make_available(FIREBALL);
+		hero.inventory.make_available(PUNCH);
+		hero.inventory.make_available(BONESPEAR);
+		hero.inventory.make_available(BOLT);
+		hero.inventory.make_available(DRAGON);
+		hero.inventory.make_available(INFEST);
+		hero.inventory.make_available(LIGHTNING);
+		hero.inventory.make_available(SKELETON);
 
 		var make_enemy: (key: Enum_Monster, x: Float, y: Float) -> Enemy = (key, x, y) ->
 		{
 			var config = Configurations.monsters[key];
-			return new Enemy(
+			var monster = new Enemy(
 				x,
 				y,
 				cell_size,
 				monster_sprites.get_sprites(config.tile_size),
+				blanks.make(0, 0, 16, Colors.HITBOX),
 				config,
 				monster_projectiles,
-				hero
+				hero,
+				level
 			);
+			monster.can_move = false;
+			return monster;
 		}
 		monsters = [
 			make_enemy(Skeleton, 100, 100),
 			make_enemy(Zombie, 175, 100),
-			make_enemy(Spider, 250, 100),
-			make_enemy(Necromancer, 325, 100),
+			make_enemy(Necromancer, 250, 100),
+			make_enemy(
+				Dragon_Tamer_Priestess,
+				325,
+				100
+			),
 			make_enemy(Dragon, 170, 350),
+			make_enemy(Dragon_Electro, 450, 350),
+			make_enemy(Dragon_Fire, 730, 350),
 		];
-
+		var level_tile_offset = 0;
+		var debug_color: Color = Colors.YELLOW;
+		debug_color.a = 0x55;
+		iterate_grid(level.data.l_Collision, (value, column, row) ->
+		{
+			blanks.make_aligned(column, row, cell_size, cell_size, cell_size, debug_color, level_tile_offset);
+		});
 		init_controller();
 	}
 
@@ -136,12 +179,12 @@ class TestEnemy extends GameScene
 
 		core.window.onMouseDown.add((x, y, button) -> if (button == MouseButton.LEFT)
 		{
-			hero.is_shooting = true;
+			hero.toggle_shooting(true);
 		});
 
 		core.window.onMouseUp.add((x, y, button) -> if (button == MouseButton.LEFT)
 		{
-			hero.is_shooting = false;
+			hero.toggle_shooting(false);
 		});
 
 		core.window.onMouseMove.add((x, y) ->
@@ -154,22 +197,17 @@ class TestEnemy extends GameScene
 
 	override function update(elapsed_seconds: Float)
 	{
-		hero.update_(
-			elapsed_seconds,
-			monsters,
-			(x, y) ->
-			{
-				particles.emit(x, y);
-			},
-			(grid_x, grid_y) -> false
-		);
+		hero.update_(elapsed_seconds, monsters, (x, y) ->
+		{
+			particles.emit(x, y);
+		});
 
 		particles.update(elapsed_seconds);
 		for (projectile in monster_projectiles.cached_items)
 		{
 			if (!projectile.is_waiting)
 			{
-				projectile.item.update(elapsed_seconds, (grid_x, grid_y) -> false);
+				projectile.item.update(elapsed_seconds);
 
 				var distance_to_hero = distance_to_point(
 					projectile.item.movement.position_x,
@@ -195,13 +233,13 @@ class TestEnemy extends GameScene
 
 		for (monster in monsters)
 		{
-			monster.update(elapsed_seconds, (x, y) -> false);
+			monster.update(elapsed_seconds);
 		}
 		for (projectile in monster_projectiles.cached_items)
 		{
 			if (!projectile.is_waiting)
 			{
-				projectile.item.update(elapsed_seconds, (grid_x, grid_y) -> false);
+				projectile.item.update(elapsed_seconds);
 			}
 		}
 	}
@@ -222,6 +260,7 @@ class TestEnemy extends GameScene
 			projectile.item.draw();
 		}
 		projectile_sprites.update_all();
+		blanks.update_all();
 	}
 
 	override function clean_up()

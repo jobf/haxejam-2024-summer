@@ -1,14 +1,14 @@
 package game;
 
-import game.Inventory;
 import game.LdtkData;
 
 var monsters: Map<Enum_Monster, EnemyConfig> = [
 	Skeleton => {
 		tile_size: _16,
-		collision_radius: 16,
+		hit_box_w: 16,
+		hit_box_h: 16,
 		animation_tile_indexes: [66, 67],
-		drop: BONESPEAR,
+		spell: BONESPEAR,
 		velocity_max: 100,
 		deceleration: 4000,
 		speed: 130,
@@ -19,9 +19,10 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 	},
 	Zombie => {
 		tile_size: _16,
-		collision_radius: 16,
+		hit_box_w: 40,
+		hit_box_h: 40,
 		animation_tile_indexes: [64, 65],
-		drop: PUNCH,
+		spell: PUNCH,
 		velocity_max: 100,
 		deceleration: 4000,
 		speed: 130,
@@ -30,24 +31,12 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		health: 20,
 		sight_grid_limit: 4
 	},
-	Spider => {
-		tile_size: _16,
-		collision_radius: 16,
-		animation_tile_indexes: [66, 67], // todo
-		drop: BONESPEAR,
-		velocity_max: 100,
-		deceleration: 4000,
-		speed: 130,
-		movement_duration: 1.25,
-		shooting_duration: 2.25,
-		health: 20,
-		sight_grid_limit: 3
-	},
 	Necromancer => {
 		tile_size: _32,
-		collision_radius: 16,
+		hit_box_w: 30,
+		hit_box_h: 60,
 		animation_tile_indexes: [0, 1], // todo
-		drop: SKELETON,
+		spell: SKELETON,
 		velocity_max: 100,
 		deceleration: 4000,
 		speed: 130,
@@ -58,9 +47,52 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 	},
 	Dragon => {
 		tile_size: _64,
-		collision_radius: 16,
-		animation_tile_indexes: [0, 1, 2, 3, 4, 5], // todo
-		drop: SKELETON,
+		hit_box_w: 80,
+		hit_box_h: 100,
+		animation_tile_indexes: [0, 1, 2, 3, 4, 5],
+		spell: SKELETON,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 130,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 20,
+		sight_grid_limit: 5
+	},
+	Dragon_Electro => {
+		tile_size: _64,
+		hit_box_w: 80,
+		hit_box_h: 100,
+		animation_tile_indexes: [6, 7, 8, 9, 10, 11],
+		spell: SKELETON,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 130,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 20,
+		sight_grid_limit: 5
+	},
+	Dragon_Fire => {
+		tile_size: _64,
+		hit_box_w: 80,
+		hit_box_h: 100,
+		animation_tile_indexes: [12, 13, 14, 15, 16, 17],
+		spell: SKELETON,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 130,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 20,
+		sight_grid_limit: 5
+	},
+	Dragon_Tamer_Priestess => {
+		tile_size: _16,
+		hit_box_w: 40,
+		hit_box_h: 40,
+		animation_tile_indexes: [68, 69],
+		spell: SKELETON,
 		velocity_max: 100,
 		deceleration: 4000,
 		speed: 130,
@@ -75,24 +107,27 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 @:structInit
 class EnemyConfig
 {
-	var collision_radius: Float;
-	var tile_size:TileSize;
+	var hit_box_w: Int;
+	var hit_box_h: Int;
+	var tile_size: TileSize;
 	var animation_tile_indexes: Array<Int>;
-	var drop: SpellType;
+	var spell: SpellType;
 	var velocity_max: Float;
 	var deceleration: Float;
 	var speed: Float;
 	var movement_duration: Float;
 	var shooting_duration: Float;
-	var health:Int;
-	var sight_grid_limit:Int;
+	var health: Int;
+	var sight_grid_limit: Int;
 }
 
-enum TileSize{
+enum TileSize
+{
 	_16;
 	_32;
 	_64;
 }
+
 enum SpellType
 {
 	EMPTY;
@@ -117,6 +152,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 0,
 		speed: 0,
 		key: EMPTY,
+		priority: 0,
+		color: 0xffffffFF,
 	},
 	FIREBALL => {
 		name: "Fireball",
@@ -127,6 +164,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 12.0,
 		speed: 1000,
 		key: FIREBALL,
+		priority: 7,
+		color: 0xff6800FF,
 	},
 	PUNCH => {
 		name: "Punch",
@@ -137,6 +176,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 1.0,
 		speed: 300,
 		key: PUNCH,
+		priority: 3,
+		color: 0xc4dedfFF,
 	},
 	BONESPEAR => {
 		name: "Bone spear",
@@ -147,6 +188,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 6.0,
 		speed: 1000,
 		key: BONESPEAR,
+		priority: 4,
+		color: 0xaeaeaeFF,
 	},
 	BOLT => {
 		name: "Holy bolt",
@@ -157,6 +200,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 5.0,
 		speed: 300,
 		key: BOLT,
+		priority: 8,
+		color: 0xfffb03FF,
 	},
 	DRAGON => {
 		name: "Summon dragon",
@@ -167,6 +212,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 60.0,
 		speed: 200,
 		key: DRAGON,
+		priority: 1,
+		color: 0x09c100FF,
 	},
 	INFEST => {
 		name: "Infest",
@@ -177,6 +224,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 3.0,
 		speed: 400,
 		key: INFEST,
+		priority: 9,
+		color: 0xf308c9FF,
 	},
 	LIGHTNING => {
 		name: "Lightning Strike",
@@ -187,6 +236,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 5.0,
 		speed: 1000,
 		key: LIGHTNING,
+		priority: 5,
+		color: 0x04c9feFF,
 	},
 	SKELETON => {
 		name: "Summon Skeleton",
@@ -197,6 +248,8 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 60.0,
 		speed: 100,
 		key: SKELETON,
+		priority: 2,
+		color: 0xffffffFF,
 	},
 	STARMISSILE => {
 		name: "Star missile",
@@ -207,5 +260,28 @@ var spells: Map<SpellType, SpellConfig> = [
 		duration: 5.0,
 		speed: 300,
 		key: STARMISSILE,
+		priority: 6,
+		color: 0xfff300FF,
 	},
 ];
+
+
+@:publicFields
+@:structInit
+class SpellConfig
+{
+	var name: String;
+	var tile_index: Int;
+	var damage: Int;
+	var hit_box: Int;
+	var cool_down: Float;
+	var duration: Float;
+	var speed: Float;
+	var key: SpellType;
+	var priority: Int;
+	var color:Int;
+	// function dump()
+	// {
+	// 	trace('spell $name\n$tile_index\n$damage\n$hit_box\n$cool_down\n$duration\n$speed\n$key\n\n');
+	// }
+}

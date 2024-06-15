@@ -3,17 +3,17 @@ package game.actor;
 import lib.peote.Elements;
 import lib.pure.Calculate;
 import lib.pure.Rectangle;
-import game.Inventory;
 import game.Level;
+import game.Configurations;
 
 class Projectile extends Actor
 {
 	var life_time: Float = 0;
 	var alpha: Float = 1;
 
-	function new(cell_size: Int, sprite: Sprite, level:Level)
+	function new(cell_size: Int, sprite: Sprite, debug_hit_box:Blank, level:Level)
 	{
-		super(cell_size, sprite, [sprite.tile_index], level);
+		super(cell_size, sprite, debug_hit_box, [sprite.tile_index], level);
 	}
 
 	override function update(elapsed_seconds: Float)
@@ -41,6 +41,7 @@ class Projectile extends Actor
 		trace('set spell ${spell.name} tile ${sprite.tile_index} anim ${animation_tile_indexes} duration ${life_time}');
 		alpha = 1;
 		sprite.tint.a = 0xff;
+		debug_hit_box.tint.a = 0xff;
 		facing = facing_x;
 		sprite.x = x;
 		sprite.y = y;
@@ -54,6 +55,9 @@ class Projectile extends Actor
 		movement.position_previous_x = x;
 		movement.position_y = y;
 		movement.position_previous_y = y;
+		hit_box.width = spell.hit_box;
+		hit_box.height = spell.hit_box;
+		
 		// trace('reset projectil $life_time');
 	}
 
@@ -69,5 +73,6 @@ class Projectile extends Actor
 	{
 		alpha = 0;
 		sprite.tint.a = 0;
+		debug_hit_box.tint.a = 0;
 	}
 }

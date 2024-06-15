@@ -7,7 +7,6 @@ import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
 import game.Configurations;
-import game.Inventory.SpellConfig;
 
 @:publicFields
 class Enemy extends Actor
@@ -24,13 +23,13 @@ class Enemy extends Actor
 	var hero: Magician;
 	var is_shooting: Bool = false;
 
-	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician, level:Level)
+	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, debug_hit_box:Blank, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician, level:Level)
 	{
 		this.cache = cache;
 		this.hero = hero;
 		this.config = config;
-		this.spell_config = Configurations.spells[config.drop];
-
+		this.spell_config = Configurations.spells[config.spell];
+		
 		super(
 			cell_size,
 			sprites.make(
@@ -38,10 +37,14 @@ class Enemy extends Actor
 				y,
 				config.animation_tile_indexes[0]
 			),
+			debug_hit_box,
 			config.animation_tile_indexes,
 			level
 		);
-
+		debug_hit_box.width = config.hit_box_w;
+		debug_hit_box.height = config.hit_box_h;
+		hit_box.width = config.hit_box_w;
+		hit_box.height = config.hit_box_h;
 		health = config.health;
 		speed = config.speed;
 		movement.velocity_max_x = config.velocity_max;
@@ -79,7 +82,7 @@ class Enemy extends Actor
 
 		if (health <= 0)
 		{
-			sprite.tile_index = Configurations.spells[config.drop].tile_index;
+			sprite.tile_index = Configurations.spells[config.spell].tile_index;
 		}
 		else
 		{
@@ -124,7 +127,7 @@ class Enemy extends Actor
 				if (health <= 0)
 				{
 					trace('pick up spell!');
-					hero.inventory.make_available(config.drop);
+					hero.inventory.make_available(config.spell);
 					is_expired = true;
 					sprite.tint.a = 0;
 					// enemies.remove(monster);

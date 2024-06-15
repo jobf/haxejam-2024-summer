@@ -31,6 +31,8 @@ class Inventory
 			duration: 0,
 			speed: 0,
 			key: EMPTY,
+			priority: 0,
+			color: 0xffffffFF
 		};
 		blanks = new Blanks(core.screen.display_hud);
 		var font: FontModel = {
@@ -87,6 +89,8 @@ class Inventory
 						duration: 0,
 						speed: 0,
 						key: EMPTY,
+						priority: 0,
+						color: 0xffffffFF
 					},
 					activate
 				);
@@ -123,6 +127,8 @@ class Inventory
 					duration: 0,
 					speed: 0,
 					key: EMPTY,
+					priority: 0,
+					color: 0xffffffFF
 				},
 				clear
 			);
@@ -230,6 +236,7 @@ class Inventory
 					button.change_spell(EMPTY);
 					tiles.update_element(button.tile);
 					trace('set button tile ${button.tile.tile_index}');
+					combine();
 					break;
 				}
 			}
@@ -280,24 +287,5 @@ class SpellButton extends UIElement
 		trace('change to $key');
 		// config.dump();
 		tile.tile_index = config.tile_index;
-	}
-}
-
-@:publicFields
-@:structInit
-class SpellConfig
-{
-	var name: String;
-	var tile_index: Int;
-	var damage: Int;
-	var hit_box: Int;
-	var cool_down: Float;
-	var duration: Float;
-	var speed: Float;
-	var key: SpellType;
-
-	function dump()
-	{
-		trace('spell $name\n$tile_index\n$damage\n$hit_box\n$cool_down\n$duration\n$speed\n$key\n\n');
 	}
 }
