@@ -179,17 +179,17 @@ class Inventory
 		{
 			trace('combine!');
 			// sort so that larger priority number is config a
-			haxe.ds.ArraySort.sort(configs, (a, b)-> a.priority < b.priority ? 1 : -1);
+			haxe.ds.ArraySort.sort(configs, (a, b)-> a.priority > b.priority ? 1 : -1);
 			var a = configs[0];
 			var b = configs[1];
-			spell_config.tile_index = b.tile_index;
+			spell_config.tile_index = a.tile_index;
+			spell_config.color = b.color;
 			spell_config.duration = a.duration + b.duration;
 			spell_config.hit_box = a.hit_box + b.hit_box;
-			spell_config.cool_down = a.cool_down + b.cool_down;
-			spell_config.speed = a.speed + b.speed;
+			spell_config.cool_down = (a.cool_down + b.cool_down) / 2;
+			spell_config.speed = (a.speed + b.speed) / 2;
 			spell_config.hit_box = a.hit_box + b.hit_box;
 			spell_config.damage = a.damage + b.damage;
-			spell_config.color = a.color;
 		}
 		else
 		{
