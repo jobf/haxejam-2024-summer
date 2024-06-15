@@ -34,8 +34,6 @@ class Magician extends Actor
 			cache: projectile -> projectile.hide(),
 			item_limit: 15,
 		};
-		health = 100;
-		this.health_bar = new HealthBar(x, y, health, blanks);
 		this.summon = summon;
 		var animation_tile_indexes = [32, 33];
 		super(
@@ -50,6 +48,9 @@ class Magician extends Actor
 			animation_tile_indexes,
 			level
 		);
+		health = 100;
+
+		this.health_bar = new HealthBar(x, y, health, blanks);
 		debug_hit_box.width = Std.int(hit_box.width);
 		debug_hit_box.height = Std.int(hit_box.height);
 		var scroll_tile_index = 34;
@@ -169,8 +170,8 @@ class Magician extends Actor
 	override function damage(amount: Float)
 	{
 		super.damage(amount);
-		health_bar.reduce(amount);
-		trace('hero damage $amount');
+		health_bar.change_health(health);
+		trace('hero damage $amount remain $health');
 	}
 }
 
@@ -178,23 +179,19 @@ class Magician extends Actor
 class HealthBar
 {
 	var width: Float = 100;
-	var height: Float = 40;
+	var height: Float = 12;
 	var back: Blank;
 	var front: Blank;
-	var front_width: Float;
 	var max: Float;
-	var amount: Float;
 	var x_offset: Float = 0;
-	var y_offset: Float = 100;
+	var y_offset: Float = 70;
 
 	function new(x: Float, y: Float, max: Float, blanks: Blanks)
 	{
 		this.max = max;
-		this.amount = max;
 		// this.blanks = blanks;
-		this.front_width = width - 4;
-		back = blanks.rect(x, y, width, height, 0xffffffAA, true);
-		front = blanks.rect(x, y, front_width, height - 4, 0xff3030AA, true);
+		back = blanks.rect(x, y, max + 4, height, 0xffffffAA, true);
+		front = blanks.rect(x, y, max, height - 4, 0xff3030AA, true);
 	}
 
 	function move(x: Float, y: Float)
@@ -205,13 +202,14 @@ class HealthBar
 		front.y = y + y_offset;
 	}
 
-	function reduce(by: Float)
+	function change_health(next: Float)
 	{
-		amount -= by;
-		if (amount < 0)
+		if (next > 0)
 		{
-			amount = 0;
+			front.width = Std.int(next); // Std.int((amount / max) * front_width);
 		}
-		front.width = Std.int((amount / max) * front_width);
+		else{
+			front.width = Std.int(0);
+		}
 	}
 }

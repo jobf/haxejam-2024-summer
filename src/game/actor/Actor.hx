@@ -174,6 +174,9 @@ class Actor
 				animation_timer = animation_duration;
 			}
 		}
+		if(health <= 0){
+			sprite.tint.a = 0;
+		}
 
 		if (tint_fade < 1)
 		{
@@ -236,9 +239,12 @@ class Actor
 
 	public function damage(amount: Float)
 	{
-		health -= amount;
-		sprite.tint.g = 0;
-		sprite.tint.b = 0;
-		tint_fade = 0.01;
+		if(tint_fade >= 1){
+
+			health -= amount;
+			sprite.tint.g = 0;
+			sprite.tint.b = 0;
+			tint_fade = 0.01;
+		}
 	}
 }

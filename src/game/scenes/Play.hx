@@ -297,7 +297,7 @@ class Play extends GameScene
 				{
 					trace('hit!');
 					projectile.item.is_expired = true;
-					hero.damage(1);
+					hero.damage(projectile.item.damage_amount);
 					particles.emit(hero.movement.position_x, hero.movement.position_y);
 				}
 				if (projectile.item.is_expired)

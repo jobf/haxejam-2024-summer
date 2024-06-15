@@ -10,6 +10,7 @@ class Projectile extends Actor
 {
 	var life_time: Float = 0;
 	var alpha: Float = 1;
+	var damage_amount:Float;
 
 	function new(cell_size: Int, sprite: Sprite, debug_hit_box: Blank, level: Level)
 	{
@@ -42,6 +43,7 @@ class Projectile extends Actor
 	{
 		life_time = spell.duration;
 		speed = spell.speed;
+		damage_amount = spell.damage;
 		sprite.tile_index = spell.tile_index;
 		animation_tile_indexes = [spell.tile_index];
 		trace('set spell ${spell.name} tile ${sprite.tile_index} anim ${animation_tile_indexes} duration ${life_time}');
