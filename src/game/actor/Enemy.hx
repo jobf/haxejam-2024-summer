@@ -1,13 +1,13 @@
 package game.actor;
 
+import game.Configurations;
+import game.LdtkData;
 import lib.peote.Elements;
 import lib.pure.Bresenham;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
-import game.Configurations;
-import game.LdtkData;
 
 typedef Summon = (key: Enum_Monster, x: Float, y: Float) -> Enemy;
 
@@ -28,6 +28,7 @@ class Enemy extends Actor
 	var summon: Summon;
 	var is_summoned_by_hero: Bool = false;
 	var enemies: Array<Enemy>;
+	var is_opening_exit:Bool = false;
 
 	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, debug_hit_box: Blank, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician,
 			level: Level, summon: Summon, enemies: Array<Enemy>)
@@ -35,6 +36,9 @@ class Enemy extends Actor
 		this.cache = cache;
 		this.hero = hero;
 		this.config = config;
+		if(config.key == Necromancer){
+			is_opening_exit = true;
+		}
 		this.spell_config = Configurations.spells[config.spell];
 		this.summon = summon;
 		this.enemies = enemies;

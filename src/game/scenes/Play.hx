@@ -1,5 +1,12 @@
 package game.scenes;
 
+import game.Configurations;
+import game.Core;
+import game.LdtkData;
+import game.Level;
+import game.MonsterSprites;
+import game.actor.*;
+import game.actor.Enemy.Summon;
 import lib.ldtk.TileMapping;
 import lib.peote.Camera;
 import lib.peote.Elements;
@@ -10,13 +17,6 @@ import lib.pure.Rectangle;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
 import peote.view.Color;
-import game.Configurations;
-import game.Core;
-import game.LdtkData;
-import game.Level;
-import game.MonsterSprites;
-import game.actor.*;
-import game.actor.Enemy.Summon;
 
 using lib.peote.TextureTools;
 
@@ -39,6 +39,7 @@ class Play extends GameScene
 	var end_x = 150;
 	var end_y = 150;
 	var exit_tile: Tile;
+	var is_starting_next_level: Bool = false;
 
 	public function new(core: Core)
 	{
@@ -127,9 +128,14 @@ class Play extends GameScene
 
 		var levels = new LdtkData();
 
+		var debug_level_collisions = true;
+
 		var level_index = 1; // test level
-		var level_index = 0;
-		var debug_level_collisions = false;
+		var level_index = Global.level_index;
+		// 0 is level 1
+		// 2 is level 2
+		// ? is final arena
+		
 
 		level = new Level(levels.all_worlds.Default.levels[level_index], cell_size);
 		if (debug_level_collisions)
@@ -169,7 +175,7 @@ class Play extends GameScene
 				case End:
 					end_x = entity.cx * cell_size;
 					end_y = entity.cy * cell_size;
-					exit_tile = tiles_level.make_aligned(entity.cx, entity.cy, cell_size, 9, false);
+					exit_tile = tiles_level.make_aligned(entity.cx, entity.cy, cell_size, 9, true);
 					exit_tile.tint.a = 0x00;
 					tiles_level.update_element(exit_tile);
 				case _:
@@ -289,6 +295,32 @@ class Play extends GameScene
 			particles.emit(x, y);
 		});
 
+		if (exit_tile != null && exit_tile.tint.a == 0xff)
+		{
+			var distance_to_exit = distance_to_point(
+				hero.movement.position_x,
+				hero.movement.position_y,
+				exit_tile.x,
+				exit_tile.y
+			);
+			
+			trace('checking exit $distance_to_exit');
+
+			if (distance_to_exit < 40 && !is_starting_next_level)
+			{
+				is_starting_next_level = true;
+				if (Global.level_index == Global.levels[Global.levels.length - 1])
+				{
+					trace('you finished the game');
+				}
+				else
+				{
+					Global.level_index++;
+					core.scene_reset();
+				}
+			}
+		}
+
 		for (projectile in monster_projectiles.cached_items)
 		{
 			if (!projectile.is_waiting)
@@ -304,14 +336,14 @@ class Play extends GameScene
 
 				if (distance_to_hero < 8)
 				{
-					trace('hit!');
+					// trace('hit!');
 					projectile.item.is_expired = true;
 					hero.damage(projectile.item.damage_amount);
 					particles.emit(hero.movement.position_x, hero.movement.position_y);
 				}
 				if (projectile.item.is_expired)
 				{
-					trace('put back in cache');
+					// trace('put back in cache');
 					monster_projectiles.put(projectile.item);
 				}
 			}
@@ -325,8 +357,11 @@ class Play extends GameScene
 			{
 				monster.update(elapsed_seconds);
 			}
-			else{
-				if(monster.config.key == Necromancer){
+			else
+			{
+				if (monster.is_opening_exit && exit_tile.tint.a != 0xff)
+				{
+					trace('make exit appear');
 					exit_tile.tint.a = 0xff;
 					tiles_level.update_element(exit_tile);
 				}

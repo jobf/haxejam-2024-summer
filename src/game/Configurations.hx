@@ -45,7 +45,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		speed: 100,
 		movement_duration: 1.25,
 		shooting_duration: 2.25,
-		health: 200,
+		health: 1,
 		sight_grid_limit: 5
 	},
 	Dragon => {
@@ -114,7 +114,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 @:structInit
 class EnemyConfig
 {
-	var key:Enum_Monster;
+	var key: Enum_Monster;
 	var hit_box_w: Int;
 	var hit_box_h: Int;
 	var tile_size: TileSize;
@@ -273,7 +273,6 @@ var spells: Map<SpellType, SpellConfig> = [
 	},
 ];
 
-
 @:publicFields
 @:structInit
 class SpellConfig
@@ -287,9 +286,18 @@ class SpellConfig
 	var speed: Float;
 	var key: SpellType;
 	var priority: Int;
-	var color:Int;
+	var color: Int;
 	// function dump()
 	// {
 	// 	trace('spell $name\n$tile_index\n$damage\n$hit_box\n$cool_down\n$duration\n$speed\n$key\n\n');
 	// }
+}
+
+@:publicFields
+class Global
+{
+	static var level_index: Int = 0;
+	static var levels: Array<Int> = [0, 2];
+
+	
 }

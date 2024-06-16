@@ -1,13 +1,13 @@
 package game.actor;
 
+import game.Inventory;
+import game.LdtkData;
+import game.actor.Enemy;
 import lib.peote.Elements;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
-import game.Inventory;
-import game.LdtkData;
-import game.actor.Enemy;
 
 class Magician extends Actor
 {

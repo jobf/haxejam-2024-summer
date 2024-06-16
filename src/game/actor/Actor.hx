@@ -106,7 +106,7 @@ class Actor
 			wall.x = next_column * movement.cell_size;
 			wall.y = movement.row * movement.cell_size;
 			wall.overlap_with(overlap, rect);
-			if (overlap.width <= padding)
+			if (overlap.width < padding)
 			{
 				movement.velocity_x = 0;
 				movement.acceleration_x = 0;
@@ -121,7 +121,7 @@ class Actor
 			wall.x = next_column * movement.cell_size;
 			wall.y = movement.row * movement.cell_size;
 			wall.overlap_with(overlap, rect);
-			if (overlap.width >= padding)
+			if (overlap.width > padding)
 			{
 				movement.velocity_x = 0;
 				movement.acceleration_x = 0;
@@ -135,7 +135,7 @@ class Actor
 			wall.x = movement.column * movement.cell_size;
 			wall.y = next_row * movement.cell_size;
 			wall.overlap_with(overlap, rect);
-			if (overlap.height <= padding)
+			if (overlap.height < padding)
 			{
 				movement.velocity_y = 0;
 				movement.acceleration_y = 0;
@@ -150,7 +150,7 @@ class Actor
 			wall.x = movement.column * movement.cell_size;
 			wall.y = next_row * movement.cell_size;
 			wall.overlap_with(overlap, rect);
-			if (overlap.height >= padding)
+			if (overlap.height > padding)
 			{
 				movement.velocity_y = 0;
 				movement.acceleration_y = 0;
@@ -176,6 +176,7 @@ class Actor
 		}
 		if(health <= 0){
 			sprite.tint.a = 0;
+			is_expired = true;
 		}
 
 		if (tint_fade < 1)
