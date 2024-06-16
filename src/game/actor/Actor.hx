@@ -33,7 +33,7 @@ class Actor
 	var level: Level;
 	var padding: Int = 8;
 
-	public function new(cell_size: Int, sprite: Sprite, debug_hit_box:Blank, animation_tile_indexes: Array<Int>, level: Level)
+	public function new(cell_size: Int, sprite: Sprite, debug_hit_box: Blank, animation_tile_indexes: Array<Int>, level: Level)
 	{
 		this.sprite = sprite;
 		this.debug_hit_box = debug_hit_box;
@@ -90,8 +90,8 @@ class Actor
 		{
 			movement.compute_motion(elapsed_seconds);
 		}
-		rect.x = movement.position_x;
-		rect.y = movement.position_y;
+		rect.x = movement.position_x - (hit_box.width / 2);
+		rect.y = movement.position_y - (hit_box.height / 2);
 		hit_box.x = rect.x - (hit_box.width / 2);
 		hit_box.y = rect.y - (hit_box.height / 2);
 
@@ -103,11 +103,10 @@ class Actor
 		// left
 		if (movement.wasMovingLeft() && level.is_wall_cell(next_column, movement.row))
 		{
-			
 			wall.x = next_column * movement.cell_size;
 			wall.y = movement.row * movement.cell_size;
 			wall.overlap_with(overlap, rect);
-			if (overlap.width < padding)
+			if (overlap.width > padding)
 			{
 				movement.velocity_x = 0;
 				movement.acceleration_x = 0;
@@ -137,7 +136,7 @@ class Actor
 			wall.x = movement.column * movement.cell_size;
 			wall.y = next_row * movement.cell_size;
 			wall.overlap_with(overlap, rect);
-			if (overlap.height < padding)
+			if (overlap.height > padding)
 			{
 				movement.velocity_y = 0;
 				movement.acceleration_y = 0;
@@ -176,7 +175,8 @@ class Actor
 				animation_timer = animation_duration;
 			}
 		}
-		if(health <= 0 && is_expired){
+		if (health <= 0 && is_expired)
+		{
 			sprite.tint.a = 0;
 			// is_expired = true;
 		}
@@ -242,8 +242,8 @@ class Actor
 
 	public function damage(amount: Float)
 	{
-		if(tint_fade >= 1){
-
+		if (tint_fade >= 1)
+		{
 			health -= amount;
 			sprite.tint.g = 0;
 			sprite.tint.b = 0;
