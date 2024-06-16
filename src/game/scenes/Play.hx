@@ -33,6 +33,12 @@ class Play extends GameScene
 	var projectile_sprites: Sprites;
 	var monster_projectiles: Cache<Projectile>;
 	var summon: Summon;
+	var start_x = 150;
+	var start_y = 150;
+
+	var end_x = 150;
+	var end_y = 150;
+	var exit_tile: Tile;
 
 	public function new(core: Core)
 	{
@@ -153,8 +159,6 @@ class Play extends GameScene
 			tiles_level.make_aligned(column, row, cell_size, tile.tileId, is_flipped_x);
 		});
 
-		var start_x = 150;
-		var start_y = 150;
 		for (entity in level.data.l_Entities.all_Mechanisms)
 		{
 			switch entity.f_Mechanism
@@ -162,8 +166,13 @@ class Play extends GameScene
 				case Start:
 					start_x = entity.cx * cell_size;
 					start_y = entity.cy * cell_size;
+				case End:
+					end_x = entity.cx * cell_size;
+					end_y = entity.cy * cell_size;
+					exit_tile = tiles_level.make_aligned(entity.cx, entity.cy, cell_size, 9, false);
+					exit_tile.tint.a = 0x00;
+					tiles_level.update_element(exit_tile);
 				case _:
-					// case End:
 					// case Door:
 			}
 		}
@@ -315,6 +324,12 @@ class Play extends GameScene
 			if (!monster.is_expired)
 			{
 				monster.update(elapsed_seconds);
+			}
+			else{
+				if(monster.config.key == Necromancer){
+					exit_tile.tint.a = 0xff;
+					tiles_level.update_element(exit_tile);
+				}
 			}
 		}
 

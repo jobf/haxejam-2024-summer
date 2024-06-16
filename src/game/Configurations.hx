@@ -4,6 +4,7 @@ import game.LdtkData;
 
 var monsters: Map<Enum_Monster, EnemyConfig> = [
 	Skeleton => {
+		key: Skeleton,
 		tile_size: _16,
 		hit_box_w: 32,
 		hit_box_h: 48,
@@ -18,6 +19,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 3
 	},
 	Zombie => {
+		key: Zombie,
 		tile_size: _16,
 		hit_box_w: 32,
 		hit_box_h: 48,
@@ -32,6 +34,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 4
 	},
 	Necromancer => {
+		key: Necromancer,
 		tile_size: _32,
 		hit_box_w: 48,
 		hit_box_h: 112,
@@ -46,6 +49,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 5
 	},
 	Dragon => {
+		key: Dragon,
 		tile_size: _64,
 		hit_box_w: 80,
 		hit_box_h: 100,
@@ -60,6 +64,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 5
 	},
 	Dragon_Electro => {
+		key: Dragon_Electro,
 		tile_size: _64,
 		hit_box_w: 80,
 		hit_box_h: 100,
@@ -74,6 +79,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 5
 	},
 	Dragon_Fire => {
+		key: Dragon_Fire,
 		tile_size: _64,
 		hit_box_w: 80,
 		hit_box_h: 100,
@@ -88,6 +94,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		sight_grid_limit: 5
 	},
 	Dragon_Tamer_Priestess => {
+		key: Dragon_Tamer_Priestess,
 		tile_size: _16,
 		hit_box_w: 48,
 		hit_box_h: 56,
@@ -107,6 +114,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 @:structInit
 class EnemyConfig
 {
+	var key:Enum_Monster;
 	var hit_box_w: Int;
 	var hit_box_h: Int;
 	var tile_size: TileSize;
