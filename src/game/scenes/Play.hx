@@ -1,12 +1,5 @@
 package game.scenes;
 
-import game.Configurations;
-import game.Core;
-import game.LdtkData;
-import game.Level;
-import game.MonsterSprites;
-import game.actor.*;
-import game.actor.Enemy.Summon;
 import lib.ldtk.TileMapping;
 import lib.peote.Camera;
 import lib.peote.Elements;
@@ -17,6 +10,13 @@ import lib.pure.Rectangle;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
 import peote.view.Color;
+import game.Configurations;
+import game.Core;
+import game.LdtkData;
+import game.Level;
+import game.MonsterSprites;
+import game.actor.*;
+import game.actor.Enemy.Summon;
 
 using lib.peote.TextureTools;
 
@@ -134,8 +134,10 @@ class Play extends GameScene
 		var level_index = Global.level_index;
 		// 0 is level 1
 		// 2 is level 2
-		// ? is final arena
-		
+		// 4 is final arena
+		// for(level in levels.all_worlds.Default.levels){
+		// 	trace(level);
+		// }
 
 		level = new Level(levels.all_worlds.Default.levels[level_index], cell_size);
 		if (debug_level_collisions)
@@ -201,7 +203,9 @@ class Play extends GameScene
 			for (entity in level.data.l_Entities.all_Monsters)
 			{
 				var config = Configurations.monsters[entity.f_Monster];
-
+				if(config == null){
+					trace('ERROR! no config for ${entity.f_Monster}');
+				}
 				new Enemy(
 					entity.cx * cell_size,
 					entity.cy * cell_size,

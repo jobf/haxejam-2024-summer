@@ -108,6 +108,22 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		health: 500,
 		sight_grid_limit: 5
 	},
+	// TODO!!
+	Haxe => {
+		key: Haxe,
+		tile_size: _16,
+		hit_box_w: 48,
+		hit_box_h: 56,
+		animation_tile_indexes: [68, 69],
+		spell: SKELETON,
+		velocity_max: 100,
+		deceleration: 4000,
+		speed: 100,
+		movement_duration: 1.25,
+		shooting_duration: 2.25,
+		health: 500,
+		sight_grid_limit: 5
+	},
 ];
 
 @:publicFields
@@ -297,7 +313,12 @@ class SpellConfig
 class Global
 {
 	static var level_index: Int = 0;
-	static var levels: Array<Int> = [0, 2];
-
-	
+	static var levels: Array<Int> = [0, 2, 4];
+	/*
+	ldtk.Level[#Level_0, 480x480] 0 0
+	ldtk.Level[#Level_1, 256x256] 1
+	ldtk.Level[#Level_2, 480x480] 2 1
+ 	ldtk.Level[#Level_3, 256x256] 3
+	ldtk.Level[#Level_4, 240x240] 4 2
+	*/
 }
