@@ -1,10 +1,10 @@
 package game.actor;
 
+import game.Configurations;
+import game.Level;
 import lib.peote.Elements;
 import lib.pure.Calculate;
 import lib.pure.Rectangle;
-import game.Configurations;
-import game.Level;
 
 class Projectile extends Actor
 {
@@ -62,6 +62,8 @@ class Projectile extends Actor
 		movement.velocity_y = 0;
 		movement.acceleration_x = 0;
 		movement.acceleration_y = 0;
+		movement.deceleration_x = 0;
+		movement.deceleration_y = 0;
 		movement.position_x = x;
 		movement.position_previous_x = x;
 		movement.position_y = y;
@@ -76,8 +78,8 @@ class Projectile extends Actor
 	{
 		// sprite.angle = angle;
 		// trace(sprite.angle);
-		movement.acceleration_y = Math.cos(angle) * speed;
-		movement.acceleration_x = Math.sin(angle) * speed;
+		movement.velocity_y = Math.cos(angle) * speed;
+		movement.velocity_x = Math.sin(angle) * speed;
 	}
 
 	public function hide()

@@ -1,0 +1,4 @@
+lime build html5 -clean -final -Dno-traces \
+&& cd dist/html5 \
+&& zip -r ../../release.zip bin \
+&& cd ../..

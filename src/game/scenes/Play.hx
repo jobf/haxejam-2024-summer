@@ -1,5 +1,12 @@
 package game.scenes;
 
+import game.Configurations;
+import game.Core;
+import game.LdtkData;
+import game.Level;
+import game.MonsterSprites;
+import game.actor.*;
+import game.actor.Enemy.Summon;
 import lib.ldtk.TileMapping;
 import lib.peote.Camera;
 import lib.peote.Elements;
@@ -11,13 +18,6 @@ import lime.ui.MouseButton;
 import lime.utils.Assets;
 import peote.view.Color;
 import slide.Slide;
-import game.Configurations;
-import game.Core;
-import game.LdtkData;
-import game.Level;
-import game.MonsterSprites;
-import game.actor.*;
-import game.actor.Enemy.Summon;
 
 using lib.peote.TextureTools;
 
@@ -326,6 +326,7 @@ class Play extends GameScene
 
 		if (!is_game_over && hero.is_dead && hero.rect.width == 0)
 		{
+			Global.spellbook = [STARMISSILE];
 			is_game_over = true;
 			Slide.tween(core.screen)
 				.to({view_y: core.screen.view_y + core.screen.res_height}, 0.55)

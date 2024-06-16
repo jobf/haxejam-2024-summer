@@ -311,6 +311,7 @@ class SpellConfig
 @:publicFields
 class Global
 {
+	static var spellbook:Array<SpellType> = [STARMISSILE];
 	static var level_index: Int = 0;
 	static var levels: Array<Int> = [0, 2, 4];
 	/*

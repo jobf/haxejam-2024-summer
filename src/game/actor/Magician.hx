@@ -1,13 +1,14 @@
 package game.actor;
 
+import game.Configurations.Global;
+import game.Inventory;
+import game.LdtkData;
+import game.actor.Enemy;
 import lib.peote.Elements;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
-import game.Inventory;
-import game.LdtkData;
-import game.actor.Enemy;
 
 class Magician extends Actor
 {
@@ -61,7 +62,10 @@ class Magician extends Actor
 		var scroll_tile_index = 34;
 		scroll = sprites.make(x, y, scroll_tile_index);
 		inventory = new Inventory(core);
-		inventory.make_available(STARMISSILE);
+		for (key in Global.spellbook)
+		{
+			inventory.make_available(key);
+		}
 		inventory.activate(STARMISSILE);
 		inventory.toggle_visibility();
 

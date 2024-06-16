@@ -1,11 +1,11 @@
 package game;
 
+import game.Configurations;
 import lib.peote.Elements;
 import lib.peote.Glyph;
 import lime.utils.Assets;
 import peote.ui.interactive.UIElement;
 import slide.*;
-import game.Configurations;
 
 using lib.peote.TextureTools;
 
@@ -196,6 +196,7 @@ class Inventory
 		var available = button_slots.filter(button -> key == button.config.key);
 		if (available.length == 0)
 		{
+			Global.spellbook.push(key);
 			for (button in button_slots)
 			{
 				if (button.config.key == EMPTY)

@@ -1,5 +1,7 @@
 package game.actor;
 
+import game.Configurations;
+import game.LdtkData;
 import lib.peote.Elements;
 import lib.pure.Bresenham;
 import lib.pure.Cache;
@@ -7,8 +9,6 @@ import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
 import slide.Slide;
-import game.Configurations;
-import game.LdtkData;
 
 typedef Summon = (key: Enum_Monster, x: Float, y: Float) -> Enemy;
 
@@ -133,7 +133,7 @@ class Enemy extends Actor
 		{
 			if (is_moving())
 			{
-				stop_moving_countdown.update(elapsed_seconds);
+				// stop_moving_countdown.update(elapsed_seconds);
 			}
 			shooting_countdown.update(elapsed_seconds);
 			spell_countdown.update(elapsed_seconds);
