@@ -105,7 +105,7 @@ class Magician extends Actor
 				projectile.item.update(elapsed_seconds);
 				for (monster in monsters)
 				{
-					if (monster.is_expired)
+					if (monster.is_expired || monster.is_dead)
 					{
 						trace('monster.is_expired');
 						continue;

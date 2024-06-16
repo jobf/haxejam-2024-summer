@@ -38,7 +38,7 @@ class Enemy extends Actor
 		this.cache = cache;
 		this.hero = hero;
 		this.config = config;
-		if (config.key == Necromancer)
+		if (config.key == Necromancer || config.key == Dragon_Tamer_Priestess || config.key == Haxe)
 		{
 			is_opening_exit = true;
 		}

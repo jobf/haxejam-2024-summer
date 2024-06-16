@@ -132,11 +132,11 @@ class Play extends GameScene
 
 		var levels = new LdtkData();
 
-		var debug_level_collisions = true;
+		var debug_level_collisions = false;
 
+		var level_index = 2; // boss level
 		var level_index = 1; // test level
 		var level_index = Global.level_index;
-		var level_index = 2; // boss level
 		// 0 is level 1
 		// 2 is level 2
 		// 4 is final arena
@@ -431,8 +431,8 @@ class Play extends GameScene
 
 		particles.update(elapsed_seconds);
 
-		var target_width_offset = 0;//(8 / 2);
-		var target_height_offset = 0;//(8 / 2);
+		var target_width_offset = 0; // (8 / 2);
+		var target_height_offset = 0; // (8 / 2);
 		var target_left = hero.rect.x - target_width_offset;
 		var target_right = hero.rect.x + target_width_offset;
 		var target_ceiling = hero.rect.y - target_height_offset;
@@ -442,22 +442,25 @@ class Play extends GameScene
 
 	override function draw()
 	{
-		hero.draw();
-
-		for (enemy in monsters)
+		if (!hero.inventory.is_enabled)
 		{
-			enemy.draw();
-		}
+			hero.draw();
 
-		for (projectile in monster_projectiles.cached_items)
-		{
-			projectile.item.sprite.tint.a = Std.int(projectile.item.alpha * 0xff);
-			projectile.item.draw();
+			for (enemy in monsters)
+			{
+				enemy.draw();
+			}
+
+			for (projectile in monster_projectiles.cached_items)
+			{
+				projectile.item.sprite.tint.a = Std.int(projectile.item.alpha * 0xff);
+				projectile.item.draw();
+			}
+			blanks.update_all();
+			projectile_sprites.update_all();
+			monster_sprites.draw();
+			camera.draw();
 		}
-		blanks.update_all();
-		projectile_sprites.update_all();
-		monster_sprites.draw();
-		camera.draw();
 	}
 
 	override function clean_up()
