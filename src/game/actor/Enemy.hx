@@ -1,13 +1,13 @@
 package game.actor;
 
-import game.Configurations;
-import game.LdtkData;
 import lib.peote.Elements;
 import lib.pure.Bresenham;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
+import game.Configurations;
+import game.LdtkData;
 
 typedef Summon = (key: Enum_Monster, x: Float, y: Float) -> Enemy;
 
@@ -28,7 +28,8 @@ class Enemy extends Actor
 	var summon: Summon;
 	var is_summoned_by_hero: Bool = false;
 	var enemies: Array<Enemy>;
-	var is_opening_exit:Bool = false;
+	var is_opening_exit: Bool = false;
+	var is_spell: Bool = false;
 
 	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, debug_hit_box: Blank, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician,
 			level: Level, summon: Summon, enemies: Array<Enemy>)
@@ -36,7 +37,8 @@ class Enemy extends Actor
 		this.cache = cache;
 		this.hero = hero;
 		this.config = config;
-		if(config.key == Necromancer){
+		if (config.key == Necromancer)
+		{
 			is_opening_exit = true;
 		}
 		this.spell_config = Configurations.spells[config.spell];
@@ -95,6 +97,25 @@ class Enemy extends Actor
 		if (health <= 0)
 		{
 			sprite.tile_index = Configurations.spells[config.spell].tile_index;
+
+			var distance_to_hero = distance_to_point(
+				hero.movement.position_x,
+				hero.movement.position_y,
+				movement.position_x,
+				movement.position_y
+			);
+
+			var is_overlapping_hero = distance_to_hero < 40;
+
+			if (is_overlapping_hero && !is_expired)
+			{
+				trace('pick up spell!');
+				hero.inventory.make_available(config.spell);
+				is_expired = true;
+				sprite.tint.a = 0;
+				// enemies.remove(monster);
+				// hero.damage(Configurations.spells[config.spell].damage); // todo - proper damage
+			}
 		}
 		else
 		{
@@ -170,25 +191,6 @@ class Enemy extends Actor
 					else
 					{
 						target_angle = null;
-					}
-				}
-
-				// todo (better distance check for overlap)
-				var is_overlapping_hero = x_grid_distance == 0 && y_grid_distance == 0; // hero.movement.column == monster.movement.column && hero.movement.row == monster.movement.row;
-
-				if (is_overlapping_hero)
-				{
-					if (health <= 0)
-					{
-						trace('pick up spell!');
-						hero.inventory.make_available(config.spell);
-						is_expired = true;
-						sprite.tint.a = 0;
-						// enemies.remove(monster);
-					}
-					else
-					{
-						hero.damage(Configurations.spells[config.spell].damage); // todo - proper damage
 					}
 				}
 			}

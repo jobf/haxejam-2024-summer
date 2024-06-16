@@ -165,6 +165,11 @@ class Inventory
 					break;
 				}
 			}
+
+			if (key != STARMISSILE)
+			{
+				toggle_visibility();
+			}
 		}
 		else
 		{
@@ -179,7 +184,7 @@ class Inventory
 		{
 			trace('combine!');
 			// sort so that larger priority number is config a
-			haxe.ds.ArraySort.sort(configs, (a, b)-> a.priority > b.priority ? 1 : -1);
+			haxe.ds.ArraySort.sort(configs, (a, b) -> a.priority > b.priority ? 1 : -1);
 			var a = configs[0];
 			var b = configs[1];
 			spell_config.tile_index = a.tile_index;

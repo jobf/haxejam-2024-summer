@@ -45,7 +45,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		speed: 100,
 		movement_duration: 1.25,
 		shooting_duration: 2.25,
-		health: 1,
+		health: 200,
 		sight_grid_limit: 5
 	},
 	Dragon => {

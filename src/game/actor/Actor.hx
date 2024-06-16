@@ -31,7 +31,7 @@ class Actor
 	var hit_box: Rectangle;
 	var overlap: Rectangle;
 	var level: Level;
-	var padding: Int = 2;
+	var padding: Int = 8;
 
 	public function new(cell_size: Int, sprite: Sprite, debug_hit_box:Blank, animation_tile_indexes: Array<Int>, level: Level)
 	{
@@ -103,6 +103,7 @@ class Actor
 		// left
 		if (movement.wasMovingLeft() && level.is_wall_cell(next_column, movement.row))
 		{
+			
 			wall.x = next_column * movement.cell_size;
 			wall.y = movement.row * movement.cell_size;
 			wall.overlap_with(overlap, rect);
@@ -132,6 +133,7 @@ class Actor
 		// up
 		if (movement.wasMovingUp() && level.is_wall_cell(movement.column, next_row))
 		{
+			// wall = level.wall_rect_at(next_x, next_y);
 			wall.x = movement.column * movement.cell_size;
 			wall.y = next_row * movement.cell_size;
 			wall.overlap_with(overlap, rect);
@@ -174,9 +176,9 @@ class Actor
 				animation_timer = animation_duration;
 			}
 		}
-		if(health <= 0){
+		if(health <= 0 && is_expired){
 			sprite.tint.a = 0;
-			is_expired = true;
+			// is_expired = true;
 		}
 
 		if (tint_fade < 1)
@@ -195,7 +197,7 @@ class Actor
 	{
 		sprite.x = rect.x;
 		sprite.y = rect.y;
-		debug_hit_box.tint.a = 0x00;
+		// debug_hit_box.tint.a = 0x00;
 		debug_hit_box.x = hit_box.x;
 		debug_hit_box.y = hit_box.y;
 		debug_hit_box.width = Std.int(hit_box.width);
