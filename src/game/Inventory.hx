@@ -4,6 +4,7 @@ import lib.peote.Elements;
 import lib.peote.Glyph;
 import lime.utils.Assets;
 import peote.ui.interactive.UIElement;
+import slide.*;
 import game.Configurations;
 
 using lib.peote.TextureTools;
@@ -18,10 +19,16 @@ class Inventory
 	var core: Core;
 	var blanks: Blanks;
 	var spell_config: SpellConfig;
+	var x: Float;
+	var y: Float;
+	var alpha: Float;
 
 	function new(core: Core)
 	{
 		this.core = core;
+		this.x = 0;
+		this.y = 0;
+		this.alpha = 1.0;
 		spell_config = {
 			name: "",
 			tile_index: 31,
@@ -38,15 +45,18 @@ class Inventory
 		var font: FontModel = {
 			element_width: 16,
 			element_height: 16,
-			tile_width: 8,
-			tile_height: 8,
-			tile_asset_path: "assets/font-zx-origins_carton-8.png",
+			tile_width: 16,
+			tile_height: 16,
+			tile_asset_path: "assets/font-zx-origins_anvil-16.png",
 		}
 		var tile_size: Int = 16;
 		var button_tile_size = 6 * tile_size;
 		var equipped_tile_size = 12 * tile_size;
 
 		glyphs = new Glyphs(core.screen.display_hud, font);
+
+		var help = glyphs.make_line(40, 440, "CLICK TO TOGGLE SPELLS", 0x663931FF);
+		var help = glyphs.make_line(40, 480, "PRESS H TO HIDE/SHOW INVENTORY", 0x663931FF);
 		var sprite_asset = Assets.getImage("assets/sprites-16.png");
 		var sprite_texture = sprite_asset.tilesheet_from_image(tile_size, tile_size);
 		tiles = new Tiles(
@@ -65,7 +75,7 @@ class Inventory
 			10,
 			core.screen.res_width - 20,
 			core.screen.res_height - 20,
-			0x000000ff
+			0xeec39aef
 		);
 
 		var gap = 20;
@@ -138,21 +148,51 @@ class Inventory
 		}
 	}
 
+	public function update()
+	{
+		core.screen.display_hud.y = Std.int(y);
+		core.screen.display_hud.x = Std.int(x);
+	}
+
+	var is_enabled: Bool = true;
+
+	function enable()
+	{
+		is_enabled = true;
+		core.screen.display_hud.show();
+	}
+
+	function disable()
+	{
+		is_enabled = false;
+		core.screen.display_hud.hide();
+	}
+
 	public function toggle_visibility()
 	{
-		if (core.screen.display_hud.isVisible)
-		{
-			core.screen.display_hud.hide();
+		if(is_enabled){
+			trace('slide out');
+			Slide.tween(this)
+				.to({y: core.screen.res_height}, 0.5)
+				.ease(slide.easing.Quad.easeIn) //
+				.onComplete(disable)
+				.start();
 		}
 		else
 		{
+			trace('slide in');
 			core.screen.display_hud.show();
+			Slide.tween(this)
+				.to({y: 0.1}, 0.5)
+				.ease(slide.easing.Quad.easeIn) //
+				.onComplete(enable)
+				.start();
 		}
 	}
 
 	function make_available(key: SpellType)
 	{
-		trace('make available $key');
+		// trace('make available $key');
 		var available = button_slots.filter(button -> key == button.config.key);
 		if (available.length == 0)
 		{
@@ -215,7 +255,7 @@ class Inventory
 
 	function activate(key: SpellType)
 	{
-		trace('activate $key');
+		// trace('activate $key');
 		var already_set = active_slots.filter(button -> key == button.config.key);
 		if (already_set.length == 0)
 		{

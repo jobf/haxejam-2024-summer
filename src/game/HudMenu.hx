@@ -47,9 +47,9 @@ class HudMenu
 		var font: FontModel = {
 			element_width: 16,
 			element_height: 16,
-			tile_width: 8,
-			tile_height: 8,
-			tile_asset_path: "assets/font-zx-origins_carton-8.png",
+			tile_width: 16,
+			tile_height: 16,
+			tile_asset_path: "assets/font-zx-origins_anvil-16.png",
 		}
 
 		glyphs = new Glyphs(core.screen.display_menu, font);

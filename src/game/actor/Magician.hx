@@ -1,13 +1,13 @@
 package game.actor;
 
-import game.Inventory;
-import game.LdtkData;
-import game.actor.Enemy;
 import lib.peote.Elements;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
+import game.Inventory;
+import game.LdtkData;
+import game.actor.Enemy;
 
 class Magician extends Actor
 {
@@ -83,6 +83,11 @@ class Magician extends Actor
 	function update_(elapsed_seconds: Float, monsters: Array<Enemy>, on_hit: (x: Float, y: Float) -> Void)
 	{
 		super.update(elapsed_seconds);
+		inventory.update();
+
+		if(inventory.is_enabled){
+			return;
+		}
 		health_bar.move(movement.position_x, movement.position_y);
 		spell_countdown.update(elapsed_seconds);
 		for (projectile in cache.cached_items)

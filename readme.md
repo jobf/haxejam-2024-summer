@@ -11,6 +11,7 @@ Install the libs
     haxelib install thx.core
     haxelib install deepnightLibs
 	haxelib install ldtk-haxe-api
+    haxelib install slide
 
 # run
 

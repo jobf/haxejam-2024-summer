@@ -35,6 +35,7 @@ class Core {
 
 	function update(elapsed_seconds:Float) {
 		if (!is_paused) {
+			slide.Slide.step(elapsed_seconds);
 			scene.update(elapsed_seconds);
 			scene.draw();
 		}

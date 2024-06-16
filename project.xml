@@ -23,6 +23,7 @@
 	<haxelib name="thx.core" />
 	<haxelib name="deepnightLibs" />
 	<haxelib name="ldtk-haxe-api" />
+	<haxelib name="slide" />
 
 	<!-- force compiling for a special opengl-es version (only set one of them) -->
 	<!-- this optimizes the build and forces no-runtimecheck for the gl-features -->

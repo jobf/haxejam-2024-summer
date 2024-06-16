@@ -299,6 +299,10 @@ class Play extends GameScene
 			particles.emit(x, y);
 		});
 
+		if(hero.inventory.is_enabled){
+			return;
+		}
+
 		if (exit_tile != null && exit_tile.tint.a == 0xff)
 		{
 			var distance_to_exit = distance_to_point(
