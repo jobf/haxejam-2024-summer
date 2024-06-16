@@ -50,7 +50,12 @@ class Magician extends Actor
 		);
 		health = 100;
 
-		this.health_bar = new HealthBar(x, y, health, blanks);
+		this.health_bar = new HealthBar(
+			rect.x - rect.width / 2,
+			rect.y - hit_box.height / 2,
+			health,
+			blanks
+		);
 		debug_hit_box.width = Std.int(hit_box.width);
 		debug_hit_box.height = Std.int(hit_box.height);
 		var scroll_tile_index = 34;
@@ -85,10 +90,13 @@ class Magician extends Actor
 		super.update(elapsed_seconds);
 		inventory.update();
 
-		if(inventory.is_enabled){
+		if (inventory.is_enabled)
+		{
 			return;
 		}
-		health_bar.move(movement.position_x, movement.position_y);
+		health_bar.move(rect.x, rect.y);
+		scroll.x -= movement.position_previous_x - movement.position_x;
+		scroll.y -= movement.position_previous_y - movement.position_y;
 		spell_countdown.update(elapsed_seconds);
 		for (projectile in cache.cached_items)
 		{
@@ -149,8 +157,8 @@ class Magician extends Actor
 			if (projectile != null)
 			{
 				projectile.reset(
-					movement.position_x,
-					movement.position_y,
+					sprite.x,
+					sprite.y,
 					facing_x,
 					inventory.spell_config
 				);
@@ -167,8 +175,11 @@ class Magician extends Actor
 			movement.position_x,
 			movement.position_y
 		);
-		scroll.x = movement.position_x + Math.sin(mouse_angle) * 60;
-		scroll.y = movement.position_y + Math.cos(mouse_angle) * 60;
+		// scroll.x = movement.position_x + Math.sin(mouse_angle) * 60;
+		// scroll.y = movement.position_y + Math.cos(mouse_angle) * 60;
+
+		scroll.x = rect.x + Math.sin(mouse_angle) * 60;
+		scroll.y = rect.y + Math.cos(mouse_angle) * 60;
 		// trace('scroll_follow_mouse radians $mouse_angle');
 	}
 
@@ -195,8 +206,8 @@ class HealthBar
 	{
 		this.max = max;
 		// this.blanks = blanks;
-		back = blanks.rect(x, y, max + 4, height, 0xffffffAA, true);
-		front = blanks.rect(x, y, max, height - 4, 0xff3030AA, true);
+		back = blanks.rect(x + x_offset, y + y_offset, max + 4, height, 0xffffffAA, true);
+		front = blanks.rect(x + x_offset, y + y_offset, max, height - 4, 0xff3030AA, true);
 	}
 
 	function move(x: Float, y: Float)
@@ -213,7 +224,8 @@ class HealthBar
 		{
 			front.width = Std.int(next); // Std.int((amount / max) * front_width);
 		}
-		else{
+		else
+		{
 			front.width = Std.int(0);
 		}
 	}

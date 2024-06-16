@@ -21,6 +21,8 @@ class Projectile extends Actor
 			[sprite.tile_index],
 			level
 		);
+
+		is_projectile = true;
 	}
 
 	override function update(elapsed_seconds: Float)
