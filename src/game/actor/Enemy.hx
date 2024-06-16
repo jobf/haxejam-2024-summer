@@ -6,6 +6,7 @@ import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
+import slide.Slide;
 import game.Configurations;
 import game.LdtkData;
 
@@ -94,9 +95,14 @@ class Enemy extends Actor
 	{
 		super.update(elapsed_seconds);
 
-		if (health <= 0)
+		if (is_dead && !is_expired)
 		{
-			sprite.tile_index = Configurations.spells[config.spell].tile_index;
+			if (rect.width == 0)
+			{
+				sprite.tile_index = Configurations.spells[config.spell].tile_index;
+				Slide.tween(rect).to({width: 64.0}, 0.25).ease(slide.easing.Quad.easeOut).start();
+				return;
+			}
 
 			var distance_to_hero = distance_to_point(
 				hero.movement.position_x,
@@ -107,7 +113,7 @@ class Enemy extends Actor
 
 			var is_overlapping_hero = distance_to_hero < 40;
 
-			if (is_overlapping_hero && !is_expired)
+			if (is_overlapping_hero)
 			{
 				trace('pick up spell!');
 				hero.inventory.make_available(config.spell);

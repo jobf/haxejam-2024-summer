@@ -3,6 +3,7 @@ package game.actor;
 import lib.peote.Elements;
 import lib.pure.Calculate;
 import lib.pure.Rectangle;
+import slide.Slide;
 
 using lib.peote.TextureTools;
 using lib.pure.EulerMotion;
@@ -19,6 +20,7 @@ class Actor
 
 	public var facing: Int = 1;
 
+	var is_dead: Bool = false;
 	var is_expired: Bool = false;
 	var animation_tile_indexes: Array<Int>;
 	var animation_frame_index: Int = 0;
@@ -32,6 +34,7 @@ class Actor
 	var overlap: Rectangle;
 	var level: Level;
 	var padding: Int = 8;
+	var is_projectile: Bool = false;
 
 	public function new(cell_size: Int, sprite: Sprite, debug_hit_box: Blank, animation_tile_indexes: Array<Int>, level: Level)
 	{
@@ -175,10 +178,10 @@ class Actor
 				animation_timer = animation_duration;
 			}
 		}
-		if (health <= 0 && is_expired)
+		if (health <= 0 && !is_dead)
 		{
-			sprite.tint.a = 0;
-			// is_expired = true;
+			is_dead = true;
+			Slide.tween(rect).to({width: 0.0}, 0.25).ease(slide.easing.Quad.easeIn).start();
 		}
 
 		if (tint_fade < 1)
@@ -202,7 +205,13 @@ class Actor
 		debug_hit_box.y = hit_box.y;
 		debug_hit_box.width = Std.int(hit_box.width);
 		debug_hit_box.height = Std.int(hit_box.height);
+
 		sprite.facing_x = -facing;
+		if (!is_projectile)
+		{
+			sprite.width = rect.width;
+			sprite.height = rect.height;
+		}
 	}
 
 	public function move_in_direction_x(direction: Int)
