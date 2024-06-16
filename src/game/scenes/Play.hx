@@ -10,6 +10,7 @@ import lib.pure.Rectangle;
 import lime.ui.MouseButton;
 import lime.utils.Assets;
 import peote.view.Color;
+import slide.Slide;
 import game.Configurations;
 import game.Core;
 import game.LdtkData;
@@ -40,6 +41,7 @@ class Play extends GameScene
 	var end_y = 150;
 	var exit_tile: Tile;
 	var is_starting_next_level: Bool = false;
+	var is_game_over: Bool = false;
 
 	public function new(core: Core)
 	{
@@ -67,6 +69,7 @@ class Play extends GameScene
 	override function begin()
 	{
 		super.begin();
+		is_game_over = false;
 		var tile_size = 16;
 		var scale = 4;
 		var cell_size = tile_size * scale;
@@ -203,7 +206,8 @@ class Play extends GameScene
 			for (entity in level.data.l_Entities.all_Monsters)
 			{
 				var config = Configurations.monsters[entity.f_Monster];
-				if(config == null){
+				if (config == null)
+				{
 					trace('ERROR! no config for ${entity.f_Monster}');
 				}
 				new Enemy(
@@ -267,12 +271,19 @@ class Play extends GameScene
 
 		core.input.change_target(controller);
 
-		core.window.onMouseDown.add((x, y, button) -> if (button == MouseButton.LEFT)
+		core.window.onMouseDown.add((x, y, button) ->
 		{
-			// x = (x - core.screen.display.xOffset) / core.screen.peote_view.zoom;
-			// y = (y - core.screen.display.yOffset) / core.screen.peote_view.zoom;
-			// particles.emit(x, y);
-			hero.is_shooting = true;
+			if (button == MouseButton.LEFT)
+			{
+				// x = (x - core.screen.display.xOffset) / core.screen.peote_view.zoom;
+				// y = (y - core.screen.display.yOffset) / core.screen.peote_view.zoom;
+				// particles.emit(x, y);
+				hero.is_shooting = true;
+			}
+			// if (button == MouseButton.RIGHT)
+			// {
+			// 	hero.health = 0;
+			// }
 		});
 
 		core.window.onMouseUp.add((x, y, button) -> if (button == MouseButton.LEFT)
@@ -299,7 +310,24 @@ class Play extends GameScene
 			particles.emit(x, y);
 		});
 
-		if(hero.inventory.is_enabled){
+		if (!is_game_over && hero.is_dead && hero.rect.width == 0)
+		{
+			is_game_over = true;
+			Slide.tween(core.screen)
+				.to({view_y: core.screen.view_y + core.screen.res_height}, 0.55)
+				.ease(slide.easing.Quad.easeIn)
+				.onComplete(() -> {
+					core.scene_reset();
+					Slide.tween(core.screen)
+					.to({view_y: core.screen.view_y - core.screen.res_height}, 0.55)
+					.ease(slide.easing.Quad.easeIn)
+					.start();
+				}) // todo - show death screen?
+				.start();
+		}
+
+		if (hero.inventory.is_enabled)
+		{
 			return;
 		}
 
@@ -311,7 +339,7 @@ class Play extends GameScene
 				exit_tile.x,
 				exit_tile.y
 			);
-			
+
 			trace('checking exit $distance_to_exit');
 
 			if (distance_to_exit < 40 && !is_starting_next_level)

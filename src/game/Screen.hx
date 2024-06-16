@@ -18,6 +18,8 @@ class Screen
 	var display_hud: PeoteUIDisplay;
 	var display_menu: PeoteUIDisplay;
 	var res_limits: Rectangle;
+	var view_x: Float = 0;
+	var view_y: Float = 0;
 
 	function new(peote_view: PeoteView, res_width: Int, res_height: Int)
 	{
@@ -91,11 +93,25 @@ class Screen
 		peote_view.zoom = scale;
 
 		// offset the view display to keep it in the center of the window
-		var view_x = Std.int(((peote_view.width / scale) / 2) - (res_width / 2));
-		var view_y = Std.int(((peote_view.height / scale) / 2) - (res_height / 2));
-		display.x = view_x;
-		display.y = view_y;
-		display_level_tiles.x = view_x;
-		display_level_tiles.y = view_y;
+		view_x = ((peote_view.width / scale) / 2) - (res_width / 2);
+		view_y = ((peote_view.height / scale) / 2) - (res_height / 2);
+		// display.x = view_x;
+		// display.y = view_y;
+		// display_level_tiles.x = view_x;
+		// display_level_tiles.y = view_y;
+	}
+
+	public function update()
+	{
+		var x = Std.int(view_x);
+		var y = Std.int(view_y);
+		display_level_tiles.x = x;
+		display_level_tiles.y = y;
+
+		display.x = x;
+		display.y = y;
+
+		// display_hud.x = x;
+		// display_hud.y = y;
 	}
 }

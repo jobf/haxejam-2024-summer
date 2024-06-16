@@ -38,6 +38,7 @@ class Core {
 			slide.Slide.step(elapsed_seconds);
 			scene.update(elapsed_seconds);
 			scene.draw();
+			screen.update();
 		}
 	}
 

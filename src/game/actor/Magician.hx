@@ -113,7 +113,7 @@ class Magician extends Actor
 				}
 				if (projectile.item.is_expired)
 				{
-					trace('put back in cache');
+					// trace('put back in cache');
 					cache.put(projectile.item);
 				}
 			}
