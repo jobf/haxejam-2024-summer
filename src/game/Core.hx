@@ -2,6 +2,7 @@ package game;
 
 import game.HudMenu;
 import lib.input2action.Controller;
+import lib.lime.Audio;
 import lib.pure.SceneBase;
 import lime.ui.MouseButton;
 import lime.ui.Window;
@@ -15,6 +16,7 @@ class Core
 	var is_paused: Bool;
 	var screen: Screen;
 	var input: Input;
+	var sound: SoundManager;
 
 	function new(window: Window, res_width: Int, res_height: Int, scene_constructor: Core -> SceneBase<Core>)
 	{
@@ -54,6 +56,9 @@ class Core
 			}
 		});
 
+		sound = new SoundManager();
+		sound.load_sound_assets([]);
+		
 		var fixed_steps_per_second = 30;
 
 		#if !web
@@ -185,4 +190,10 @@ class GameScene extends SceneBase<Core>
 		menu.dispose();
 		menu = null;
 	}
+}
+
+@:enum
+abstract SoundKey(Int) from Int to Int
+{
+	// var NEW = 0;
 }
