@@ -25,13 +25,13 @@ class Play extends GameScene
 {
 	var blanks: Blanks;
 	var tiles_level: Tiles;
-	var monster_sprites: MonsterSprites;
 	var hero: Magician;
+	var monster_sprites: MonsterSprites;
+	var particles: BlanksParticles;
+	var projectile_sprites: Sprites;
 	var monsters: Array<Enemy>;
 	var level: Level;
 	var camera: Camera;
-	var particles: BlanksParticles;
-	var projectile_sprites: Sprites;
 	var monster_projectiles: Cache<Projectile>;
 	var summon: Summon;
 	var start_x = 150;
@@ -103,7 +103,6 @@ class Play extends GameScene
 			monsters.push(monster);
 			return monster;
 		}
-		blanks = new Blanks(core.screen.display_level_tiles);
 
 		monster_sprites = new MonsterSprites(core, scale);
 
@@ -116,6 +115,8 @@ class Play extends GameScene
 			tile_size * 2,
 			tile_size * 2
 		);
+
+		blanks = new Blanks(core.screen.display_level_tiles);
 
 		monster_projectiles = {
 			cached_items: [],
@@ -135,6 +136,7 @@ class Play extends GameScene
 
 		var level_index = 1; // test level
 		var level_index = Global.level_index;
+		var level_index = 2; // boss level
 		// 0 is level 1
 		// 2 is level 2
 		// 4 is final arena
@@ -142,7 +144,7 @@ class Play extends GameScene
 		// 	trace(level);
 		// }
 
-		level = new Level(levels.all_worlds.Default.levels[level_index], cell_size);
+		level = new Level(levels.all_worlds.Default.levels[Global.levels[level_index]], cell_size);
 		if (debug_level_collisions)
 		{
 			var level_tile_offset = 0;
@@ -210,7 +212,7 @@ class Play extends GameScene
 				{
 					trace('ERROR! no config for ${entity.f_Monster}');
 				}
-				new Enemy(
+				entity.f_Monster == Haxe ? new Boss(
 					entity.cx * cell_size,
 					entity.cy * cell_size,
 					cell_size,
@@ -222,7 +224,19 @@ class Play extends GameScene
 					level,
 					summon,
 					monsters
-				);
+				) : new Enemy(
+					entity.cx * cell_size,
+					entity.cy * cell_size,
+					cell_size,
+					monster_sprites.get_sprites(config.tile_size),
+					blanks.make(0, 0, 16, false, Colors.HITBOX),
+					config,
+					monster_projectiles,
+					hero,
+					level,
+					summon,
+					monsters
+					);
 			}
 		];
 
@@ -316,12 +330,13 @@ class Play extends GameScene
 			Slide.tween(core.screen)
 				.to({view_y: core.screen.view_y + core.screen.res_height}, 0.55)
 				.ease(slide.easing.Quad.easeIn)
-				.onComplete(() -> {
+				.onComplete(() ->
+				{
 					core.scene_reset();
 					Slide.tween(core.screen)
-					.to({view_y: core.screen.view_y - core.screen.res_height}, 0.55)
-					.ease(slide.easing.Quad.easeIn)
-					.start();
+						.to({view_y: core.screen.view_y - core.screen.res_height}, 0.55)
+						.ease(slide.easing.Quad.easeIn)
+						.start();
 				}) // todo - show death screen?
 				.start();
 		}
@@ -363,20 +378,30 @@ class Play extends GameScene
 			{
 				projectile.item.update(elapsed_seconds);
 
-				var distance_to_hero = distance_to_point(
-					projectile.item.movement.position_x,
-					projectile.item.movement.position_y,
-					hero.movement.position_x,
-					hero.movement.position_y
-				);
-
-				if (distance_to_hero < 8)
+				projectile.item.hit_box.overlap_with(projectile.item.overlap, hero.hit_box);
+				if (projectile.item.overlap.width != 0 || projectile.item.overlap.height != 0)
 				{
-					// trace('hit!');
+					trace('hit!');
 					projectile.item.is_expired = true;
 					hero.damage(projectile.item.damage_amount);
-					particles.emit(hero.movement.position_x, hero.movement.position_y);
+					particles.emit(hero.rect.x, hero.rect.y);
+					// on_hit(hero.movement.position_x, hero.movement.position_y);
 				}
+
+				// var distance_to_hero = distance_to_point(
+				// 	projectile.item.movement.position_x,
+				// 	projectile.item.movement.position_y,
+				// 	hero.movement.position_x,
+				// 	hero.movement.position_y
+				// );
+
+				// if (distance_to_hero < 8)
+				// {
+				// 	// trace('hit!');
+				// 	projectile.item.is_expired = true;
+				// 	hero.damage(projectile.item.damage_amount);
+				// 	particles.emit(hero.rect.x, hero.rect.y);
+				// }
 				if (projectile.item.is_expired)
 				{
 					// trace('put back in cache');
@@ -406,12 +431,12 @@ class Play extends GameScene
 
 		particles.update(elapsed_seconds);
 
-		var target_width_offset = (8 / 2);
-		var target_height_offset = (8 / 2);
-		var target_left = hero.movement.position_x - target_width_offset;
-		var target_right = hero.movement.position_x + target_width_offset;
-		var target_ceiling = hero.movement.position_y - target_height_offset;
-		var target_floor = hero.movement.position_y + target_height_offset;
+		var target_width_offset = 0;//(8 / 2);
+		var target_height_offset = 0;//(8 / 2);
+		var target_left = hero.rect.x - target_width_offset;
+		var target_right = hero.rect.x + target_width_offset;
+		var target_ceiling = hero.rect.y - target_height_offset;
+		var target_floor = hero.rect.y + target_height_offset;
 		camera.follow_target(target_left, target_right, target_ceiling, target_floor);
 	}
 
@@ -437,9 +462,11 @@ class Play extends GameScene
 
 	override function clean_up()
 	{
-		projectile_sprites.clear();
-		monster_sprites.clear();
-		tiles_level.clear();
 		blanks.clear();
+		tiles_level.clear();
+		// hero.clear();
+		monster_sprites.clear();
+		particles.blanks.clear();
+		projectile_sprites.clear();
 	}
 }

@@ -213,25 +213,42 @@ class TestEnemy extends GameScene
 		{
 			if (!projectile.is_waiting)
 			{
+				// projectile.item.update(elapsed_seconds);
+
+				// var distance_to_hero = distance_to_point(
+				// 	projectile.item.movement.position_x,
+				// 	projectile.item.movement.position_y,
+				// 	hero.movement.position_x,
+				// 	hero.movement.position_y
+				// );
+
+				// if (distance_to_hero < 8)
+				// {
+				// 	trace('hit!');
+				// 	projectile.item.is_expired = true;
+				// 	hero.damage(1);
+				// 	particles.emit(hero.movement.position_x, hero.movement.position_y);
+				// }
+				// if (projectile.item.is_expired)
+				// {
+				// 	trace('put back in cache');
+				// 	monster_projectiles.put(projectile.item);
+				// }
+
+
 				projectile.item.update(elapsed_seconds);
 
-				var distance_to_hero = distance_to_point(
-					projectile.item.movement.position_x,
-					projectile.item.movement.position_y,
-					hero.movement.position_x,
-					hero.movement.position_y
-				);
-
-				if (distance_to_hero < 8)
+				projectile.item.hit_box.overlap_with(projectile.item.overlap, hero.hit_box);
+				if (projectile.item.overlap.width != 0 || projectile.item.overlap.height != 0)
 				{
 					trace('hit!');
 					projectile.item.is_expired = true;
-					hero.damage(1);
-					particles.emit(hero.movement.position_x, hero.movement.position_y);
+					// hero.damage(projectile.item.damage_amount);
+					particles.emit(hero.rect.x, hero.rect.y);
 				}
 				if (projectile.item.is_expired)
 				{
-					trace('put back in cache');
+					// trace('put back in cache');
 					monster_projectiles.put(projectile.item);
 				}
 			}

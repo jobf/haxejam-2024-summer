@@ -56,6 +56,8 @@ class Enemy extends Actor
 			config.animation_tile_indexes,
 			level
 		);
+		rect.width = sprite.width;
+		rect.height = sprite.height;
 		debug_hit_box.width = config.hit_box_w;
 		debug_hit_box.height = config.hit_box_h;
 		hit_box.width = config.hit_box_w;
@@ -95,7 +97,11 @@ class Enemy extends Actor
 	{
 		super.update(elapsed_seconds);
 
-		if (is_dead && !is_expired)
+		if(is_expired){
+			return;
+		}
+		
+		if (is_dead)
 		{
 			if (rect.width == 0)
 			{

@@ -106,22 +106,22 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		movement_duration: 1.25,
 		shooting_duration: 2.25,
 		health: 500,
-		sight_grid_limit: 5
+		sight_grid_limit: 15
 	},
 	Haxe => {
 		key: Haxe,
 		tile_size: _32,
-		hit_box_w: 48,
-		hit_box_h: 48,
+		hit_box_w: 100,
+		hit_box_h: 100,
 		animation_tile_indexes: [2, 3, 4, 5, 6],
-		spell: SKELETON,
+		spell: STARMISSILE,
 		velocity_max: 100,
 		deceleration: 4000,
 		speed: 100,
-		movement_duration: 1.25,
-		shooting_duration: 2.25,
+		movement_duration: 10.25,
+		shooting_duration: 20.25,
 		health: 1000,
-		sight_grid_limit: 5
+		sight_grid_limit: 50
 	},
 ];
 

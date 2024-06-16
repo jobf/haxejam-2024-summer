@@ -116,7 +116,8 @@ class Magician extends Actor
 						trace('hit!');
 						projectile.item.is_expired = true;
 						monster.damage(inventory.spell_config.damage);
-						on_hit(monster.movement.position_x, monster.movement.position_y);
+						on_hit(monster.rect.x, monster.rect.y);
+						// on_hit(monster.movement.position_x, monster.movement.position_y);
 					}
 				}
 				if (projectile.item.is_expired)

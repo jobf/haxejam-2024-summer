@@ -35,10 +35,12 @@ class Actor
 	var level: Level;
 	var padding: Int = 8;
 	var is_projectile: Bool = false;
+	var original_width: Float = 0;
 
 	public function new(cell_size: Int, sprite: Sprite, debug_hit_box: Blank, animation_tile_indexes: Array<Int>, level: Level)
 	{
 		this.sprite = sprite;
+		this.original_width = sprite.width;
 		this.debug_hit_box = debug_hit_box;
 		this.level = level;
 		this.animation_tile_indexes = animation_tile_indexes;
@@ -89,6 +91,10 @@ class Actor
 	// wall_tile_at: (x: Float, y: Float) -> Null<Rectangle>
 	public function update(elapsed_seconds: Float)
 	{
+		if (is_dead)
+		{
+			return;
+		}
 		if (can_move)
 		{
 			movement.compute_motion(elapsed_seconds);
