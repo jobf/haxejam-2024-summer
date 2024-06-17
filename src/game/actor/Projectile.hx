@@ -1,10 +1,10 @@
 package game.actor;
 
-import game.Configurations;
-import game.Level;
 import lib.peote.Elements;
 import lib.pure.Calculate;
 import lib.pure.Rectangle;
+import game.Configurations;
+import game.Level;
 
 class Projectile extends Actor
 {
@@ -46,6 +46,7 @@ class Projectile extends Actor
 		life_time = spell.duration;
 		speed = spell.speed;
 		damage_amount = spell.damage;
+		trace(damage_amount);
 		sprite.tile_index = spell.tile_index;
 		animation_tile_indexes = [spell.tile_index];
 		trace('set spell ${spell.name} tile ${sprite.tile_index} anim ${animation_tile_indexes} duration ${life_time}');

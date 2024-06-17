@@ -202,6 +202,7 @@ class Actor
 		sprite.tint.b = sprite.tint.g;
 	}
 
+
 	public function draw()
 	{
 		sprite.x = rect.x;

@@ -149,16 +149,16 @@ class HudMenu
 
 	public function open(previous_controller: ControllerActions)
 	{
-		trace('open hud');
-		is_open = true;
-		core.screen.display_menu_show();
+		// trace('open hud');
+		// is_open = true;
+		// core.screen.display_menu_show();
 	}
 
 	public function close()
 	{
-		trace('close hud');
-		is_open = false;
-		core.screen.display_menu_hide();
+		// trace('close hud');
+		// is_open = false;
+		// core.screen.display_menu_hide();
 	}
 
 	public function dispose()

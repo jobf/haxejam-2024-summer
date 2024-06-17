@@ -1,0 +1,1 @@
+for i in *.ogg; do ffmpeg -i "$i" "${i%.ogg}.mp3" -b:a 128; done   

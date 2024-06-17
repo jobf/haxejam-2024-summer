@@ -14,7 +14,7 @@ import game.actor.Enemy;
 @:publicFields
 class Boss extends Enemy
 {
-	var attacks:Array<SpellType> = [
+	var attacks: Array<SpellType> = [
 		BOLT,
 		BONESPEAR,
 		FIREBALL,
@@ -25,11 +25,28 @@ class Boss extends Enemy
 		// DRAGON,
 		SKELETON,
 	];
-	var attack_index:Int = 0;
-	override function update(elapsed_seconds:Float){
+	var attack_index: Int = 0;
+	var particles: SpritesParticles;
+
+	function new(x: Float, y: Float, cell_size: Int, sprites: Sprites, debug_hit_box: Blank, config: EnemyConfig, cache: Cache<Projectile>, hero: Magician,
+			level: Level, summon: Summon, enemies: Array<Enemy>)
+	{
+		super(x, y, cell_size, sprites, debug_hit_box, config, cache, hero, level, summon, enemies);
+		particles = new SpritesParticles(hero.core, sprites);
+	}
+
+	override function update(elapsed_seconds: Float)
+	{
 		super.update(elapsed_seconds);
 		attack_index = wrapped_increment(attack_index, 1, attacks.length);
 		spell_config = Configurations.spells[attacks[attack_index]];
 		spell_countdown.duration = spell_config.cool_down;
+
+		if (is_dead)
+		{
+			particles.emit(rect.x, rect.y);
+		}
+
+		particles.update(elapsed_seconds);
 	}
 }

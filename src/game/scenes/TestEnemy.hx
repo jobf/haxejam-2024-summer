@@ -137,7 +137,7 @@ class TestEnemy extends GameScene
 		hero.inventory.make_available(PUNCH);
 		hero.inventory.make_available(BONESPEAR);
 		hero.inventory.make_available(BOLT);
-		hero.inventory.make_available(DRAGON);
+		// hero.inventory.make_available(DRAGON);
 		hero.inventory.make_available(INFEST);
 		hero.inventory.make_available(LIGHTNING);
 		hero.inventory.make_available(SKELETON);

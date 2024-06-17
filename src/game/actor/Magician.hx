@@ -1,14 +1,14 @@
 package game.actor;
 
-import game.Configurations.Global;
-import game.Inventory;
-import game.LdtkData;
-import game.actor.Enemy;
 import lib.peote.Elements;
 import lib.pure.Cache;
 import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
+import game.Configurations;
+import game.Inventory;
+import game.LdtkData;
+import game.actor.Enemy;
 
 class Magician extends Actor
 {
@@ -20,10 +20,11 @@ class Magician extends Actor
 	var is_shooting: Bool = false;
 	var summon: Summon;
 	var health_bar: HealthBar;
-
+	var core: Core;
 	public function new(core: Core, x: Float, y: Float, cell_size: Int, sprites: Sprites, blanks: Blanks, projectile_sprites: Sprites, level: Level,
 			summon: Summon)
 	{
+		this.core = core;
 		cache = {
 			cached_items: [],
 			create: () -> new Projectile(
@@ -146,15 +147,26 @@ class Magician extends Actor
 	public function cast_spell(facing_x: Int)
 	{
 		trace('magician cast spell');
-		if (inventory.spell_config.key == SKELETON || inventory.spell_config.key == DRAGON)
+		var is_summon = false;
+		for (button in inventory.active_slots)
 		{
-			var key = inventory.spell_config.key == SKELETON ? Skeleton : Dragon;
-			var monster = summon(
-				key,
-				movement.position_x,
-				movement.position_y
-			);
+			if (button.config.key == SKELETON)
+			{
+				is_summon = true;
+			}
+		}
+		if (is_summon)
+		{
+			var angle = radians_between(rect.x, rect.y, scroll.x, scroll.y) - 180;
+			var x = rect.x + Math.sin(angle) * 200;
+			var y = rect.y + Math.cos(angle) * 200;
+
+			var key = Skeleton; // inventory.spell_config.key == SKELETON ? Skeleton : Dragon;
+			var monster = summon(Skeleton, x, y);
+			monster.animation_tile_indexes = [70, 71];
 			monster.is_summoned_by_hero = true;
+			trace(monster.health);
+			core.sound.play_sound(Configurations.sounds[SpellType.SKELETON]);
 		}
 		else
 		{
@@ -168,6 +180,8 @@ class Magician extends Actor
 					inventory.spell_config
 				);
 				projectile.move_towards_angle(mouse_angle);
+
+				core.sound.play_sound(Configurations.sounds[inventory.spell_config.key]);
 			}
 		}
 	}

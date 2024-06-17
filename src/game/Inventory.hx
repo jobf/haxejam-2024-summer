@@ -1,11 +1,11 @@
 package game;
 
-import game.Configurations;
 import lib.peote.Elements;
 import lib.peote.Glyph;
 import lime.utils.Assets;
 import peote.ui.interactive.UIElement;
 import slide.*;
+import game.Configurations;
 
 using lib.peote.TextureTools;
 
@@ -229,13 +229,16 @@ class Inventory
 			var a = configs[0];
 			var b = configs[1];
 			spell_config.tile_index = a.tile_index;
+			trace('sprite of ${a.key}');
 			spell_config.color = b.color;
+			trace('color of ${b.key}');
 			spell_config.duration = a.duration + b.duration;
 			spell_config.hit_box = a.hit_box + b.hit_box;
 			spell_config.cool_down = (a.cool_down + b.cool_down) / 2;
 			spell_config.speed = (a.speed + b.speed) / 2;
 			spell_config.hit_box = a.hit_box + b.hit_box;
 			spell_config.damage = a.damage + b.damage;
+			spell_config.key = a.key;
 		}
 		else
 		{
@@ -250,6 +253,7 @@ class Inventory
 				spell_config.hit_box = a.hit_box;
 				spell_config.damage = a.damage;
 				spell_config.priority = a.priority;
+				spell_config.key = a.key;
 			}
 		}
 	}

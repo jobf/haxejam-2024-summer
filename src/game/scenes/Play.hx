@@ -1,12 +1,5 @@
 package game.scenes;
 
-import game.Configurations;
-import game.Core;
-import game.LdtkData;
-import game.Level;
-import game.MonsterSprites;
-import game.actor.*;
-import game.actor.Enemy.Summon;
 import lib.ldtk.TileMapping;
 import lib.peote.Camera;
 import lib.peote.Elements;
@@ -18,6 +11,13 @@ import lime.ui.MouseButton;
 import lime.utils.Assets;
 import peote.view.Color;
 import slide.Slide;
+import game.Configurations;
+import game.Core;
+import game.LdtkData;
+import game.Level;
+import game.MonsterSprites;
+import game.actor.*;
+import game.actor.Enemy.Summon;
 
 using lib.peote.TextureTools;
 
@@ -70,6 +70,7 @@ class Play extends GameScene
 	{
 		super.begin();
 		is_game_over = false;
+		is_starting_next_level = false;
 		var tile_size = 16;
 		var scale = 4;
 		var cell_size = tile_size * scale;
@@ -137,6 +138,15 @@ class Play extends GameScene
 		var level_index = 2; // boss level
 		var level_index = 1; // test level
 		var level_index = Global.level_index;
+
+		if (level_index == 2)
+		{
+			core.sound.play_music("assets/bgm_boss.ogg");
+		}
+		else
+		{
+			core.sound.play_music("assets/bgm.ogg");
+		}
 		// 0 is level 1
 		// 2 is level 2
 		// 4 is final arena
@@ -333,6 +343,7 @@ class Play extends GameScene
 				.ease(slide.easing.Quad.easeIn)
 				.onComplete(() ->
 				{
+					Global.level_index = 0;
 					core.scene_reset();
 					Slide.tween(core.screen)
 						.to({view_y: core.screen.view_y - core.screen.res_height}, 0.55)
@@ -349,16 +360,11 @@ class Play extends GameScene
 
 		if (exit_tile != null && exit_tile.tint.a == 0xff)
 		{
-			var distance_to_exit = distance_to_point(
-				hero.movement.position_x,
-				hero.movement.position_y,
-				exit_tile.x,
-				exit_tile.y
-			);
+			var distance_to_exit = distance_to_point(hero.rect.x, hero.rect.y, exit_tile.x, exit_tile.y);
 
 			trace('checking exit $distance_to_exit');
 
-			if (distance_to_exit < 40 && !is_starting_next_level)
+			if (distance_to_exit < 50 && !is_starting_next_level)
 			{
 				is_starting_next_level = true;
 				if (Global.level_index == Global.levels[Global.levels.length - 1])
@@ -419,14 +425,12 @@ class Play extends GameScene
 			{
 				monster.update(elapsed_seconds);
 			}
-			else
+
+			if (monster.is_dead && monster.is_opening_exit && exit_tile.tint.a != 0xff)
 			{
-				if (monster.is_opening_exit && exit_tile.tint.a != 0xff)
-				{
-					trace('make exit appear');
-					exit_tile.tint.a = 0xff;
-					tiles_level.update_element(exit_tile);
-				}
+				trace('make exit appear');
+				exit_tile.tint.a = 0xff;
+				tiles_level.update_element(exit_tile);
 			}
 		}
 

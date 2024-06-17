@@ -1,12 +1,13 @@
 package lib.lime;
 
 import haxe.ds.Vector;
-import lib.pure.Countdown;
+import game.Configurations;
 import lime.app.Future;
 import lime.math.Vector4;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
 import lime.utils.Assets;
+import lib.pure.Countdown;
 
 class SoundManager
 {
@@ -22,6 +23,17 @@ class SoundManager
 	var music: AudioSource;
 
 	var sounds: Map<Int, Sound>;
+
+	// public static var sounds:Map<SpellType, SoundKey> = [
+	// 	BOLT => HOLYBOLT,
+	// 	BONESPEAR => BONESPEAR,
+	// 	FIREBALL => FIREBALL,
+	// 	INFEST => INFEST,
+	// 	LIGHTNING => LIGHTNING,
+	// 	PUNCH => PUNCH,
+	// 	SKELETON => SKELETON,
+	// 	STARMISSILE => STARMISSILE,
+	// ];
 
 	public function new()
 	{
@@ -130,7 +142,7 @@ class SoundManager
 		load sounds from asset library	
 		can only be called after lime preload complete
 	**/
-	public function load_sound_assets(keyed_paths: Map<Int, String>, voice_count: Int = 3)
+	public function load_sound_assets(keyed_paths: Map<Int, String>, voice_count: Int = 15)
 	{
 		for (key => asset_path in keyed_paths.keyValueIterator())
 		{
@@ -150,7 +162,7 @@ class SoundManager
 		#end
 	}
 
-	public function load_sound_asset(asset_path: String, key: Int, voice_count: Int = 3)
+	public function load_sound_asset(asset_path: String, key: Int, voice_count: Int = 15)
 	{
 		var targetted_asset_path = target_path(asset_path);
 		if (Assets.exists(targetted_asset_path))

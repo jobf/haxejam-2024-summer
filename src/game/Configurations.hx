@@ -99,7 +99,7 @@ var monsters: Map<Enum_Monster, EnemyConfig> = [
 		hit_box_w: 48,
 		hit_box_h: 56,
 		animation_tile_indexes: [68, 69],
-		spell: SKELETON,
+		spell: BOLT,
 		velocity_max: 100,
 		deceleration: 4000,
 		speed: 100,
@@ -151,12 +151,30 @@ enum TileSize
 	_64;
 }
 
+
+@:enum
+abstract SoundKey(Int) from Int to Int
+{
+	var BONESPEAR = 0;
+	var DRAGON = 1;
+	var FIREBALL = 2;
+	var HOLYBOLT = 3;
+	var INFEST = 4;
+	var LIGHTNING = 5;
+	var PRIESTESS = 6;
+	var PUNCH = 7;
+	var SKELETON = 8;
+	var STARMISSILE = 8;
+}
+
+
+
 enum SpellType
 {
 	EMPTY;
 	BOLT;
 	BONESPEAR;
-	DRAGON;
+	// DRAGON;
 	FIREBALL;
 	INFEST;
 	LIGHTNING;
@@ -226,18 +244,18 @@ var spells: Map<SpellType, SpellConfig> = [
 		priority: 8,
 		color: 0xfffb03FF,
 	},
-	DRAGON => {
-		name: "Summon dragon",
-		tile_index: 14,
-		damage: 30,
-		hit_box: 32,
-		cool_down: 10.0,
-		duration: 60.0,
-		speed: 200,
-		key: DRAGON,
-		priority: 1,
-		color: 0x09c100FF,
-	},
+	// DRAGON => {
+	// 	name: "Summon dragon",
+	// 	tile_index: 14,
+	// 	damage: 30,
+	// 	hit_box: 32,
+	// 	cool_down: 10.0,
+	// 	duration: 60.0,
+	// 	speed: 200,
+	// 	key: EMPTY,
+	// 	priority: 1,
+	// 	color: 0x09c100FF,
+	// },
 	INFEST => {
 		name: "Infest",
 		tile_index: 7,
@@ -265,9 +283,9 @@ var spells: Map<SpellType, SpellConfig> = [
 	SKELETON => {
 		name: "Summon Skeleton",
 		tile_index: 15,
-		damage: 10,
+		damage: 40,
 		hit_box: 32,
-		cool_down: 10.0,
+		cool_down: 1.0,
 		duration: 60.0,
 		speed: 100,
 		key: SKELETON,
@@ -322,3 +340,15 @@ class Global
 	ldtk.Level[#Level_4, 240x240] 4 2
 	*/
 }
+
+
+var sounds:Map<SpellType, SoundKey> = [
+	BOLT => HOLYBOLT,
+	BONESPEAR => BONESPEAR,
+	FIREBALL => FIREBALL,
+	INFEST => INFEST,
+	LIGHTNING => LIGHTNING,
+	PUNCH => PUNCH,
+	SKELETON => SKELETON,
+	STARMISSILE => STARMISSILE,
+];

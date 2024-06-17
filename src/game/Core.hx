@@ -1,12 +1,13 @@
 package game;
 
-import game.HudMenu;
 import lib.input2action.Controller;
 import lib.lime.Audio;
 import lib.pure.SceneBase;
 import lime.ui.MouseButton;
 import lime.ui.Window;
 import peote.view.PeoteView;
+import game.Configurations;
+import game.HudMenu;
 
 @:publicFields
 class Core
@@ -57,8 +58,20 @@ class Core
 		});
 
 		sound = new SoundManager();
-		sound.load_sound_assets([]);
-		
+		sound.load_sound_assets([
+			BONESPEAR 	=> "assets/bonespear.ogg",
+			DRAGON 		=> "assets/dragon.ogg",
+			FIREBALL 	=> "assets/fireball.ogg",
+			HOLYBOLT 	=> "assets/holybolt.ogg",
+			INFEST 		=> "assets/infest.ogg",
+			LIGHTNING 	=> "assets/lightning.ogg",
+			PRIESTESS 	=> "assets/priestess.ogg",
+			PUNCH 		=> "assets/punch.ogg",
+			SKELETON		=> "assets/skeleton.ogg",
+			STARMISSILE		=> "assets/starmissile.ogg",
+
+		]);
+
 		var fixed_steps_per_second = 30;
 
 		#if !web
@@ -190,10 +203,4 @@ class GameScene extends SceneBase<Core>
 		menu.dispose();
 		menu = null;
 	}
-}
-
-@:enum
-abstract SoundKey(Int) from Int to Int
-{
-	// var NEW = 0;
 }

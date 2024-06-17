@@ -1,8 +1,8 @@
+import haxe.CallStack;
+import haxe.Log;
 import game.Core;
 import game.Screen;
 import game.scenes.*;
-import haxe.CallStack;
-import haxe.Log;
 import lime.app.Application;
 import lime.ui.KeyCode;
 import peote.ui.PeoteUIDisplay;

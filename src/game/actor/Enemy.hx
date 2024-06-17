@@ -1,7 +1,5 @@
 package game.actor;
 
-import game.Configurations;
-import game.LdtkData;
 import lib.peote.Elements;
 import lib.pure.Bresenham;
 import lib.pure.Cache;
@@ -9,6 +7,8 @@ import lib.pure.Calculate;
 import lib.pure.Countdown;
 import lib.pure.Rectangle;
 import slide.Slide;
+import game.Configurations;
+import game.LdtkData;
 
 typedef Summon = (key: Enum_Monster, x: Float, y: Float) -> Enemy;
 
@@ -101,9 +101,9 @@ class Enemy extends Actor
 			return;
 		}
 		
-		if (is_dead)
+		if (is_dead && !is_summoned_by_hero)
 		{
-			if (rect.width == 0)
+			if (rect.width == 0 && !is_opening_exit)
 			{
 				sprite.tile_index = Configurations.spells[config.spell].tile_index;
 				Slide.tween(rect).to({width: 64.0}, 0.25).ease(slide.easing.Quad.easeOut).start();
@@ -209,6 +209,7 @@ class Enemy extends Actor
 		}
 	}
 
+
 	function target(angle: Float)
 	{
 		this.target_angle = angle;
@@ -237,6 +238,7 @@ class Enemy extends Actor
 
 			summon(Skeleton, x, y);
 			trace('summon skeleton $x $y');
+			hero.core.sound.play_sound(Configurations.sounds[SpellType.SKELETON]);
 		}
 		else
 		{
@@ -256,6 +258,8 @@ class Enemy extends Actor
 					movement.position_y
 				);
 				projectile.move_towards_angle(angle);
+
+				hero.core.sound.play_sound(Configurations.sounds[spell_config.key]);
 			}
 		}
 	}

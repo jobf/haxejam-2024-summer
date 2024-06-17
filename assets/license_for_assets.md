@@ -1,5 +1,8 @@
 This license specifically applies to the content of the assets folder.
 
+Font-zx-origins_anvil-16.png a slightly edited version of the font ffrom damieng https://damieng.com/typography/zx-origins/
+
+Sounds from freesound.org and suno.ai
 
 Attribution-NonCommercial-ShareAlike 4.0 International
 
